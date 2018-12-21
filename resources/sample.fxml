@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<?import org.controlsfx.control.CheckComboBox?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <children>
+      <Button fx:id="Run" layoutX="469.0" layoutY="47.0" mnemonicParsing="false" onAction="#run" prefHeight="25.0" prefWidth="61.0" text="Run" />
+      <Button fx:id="reset" layoutX="25.0" layoutY="150.0" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="84.0" text="Reset" />
+      <Button fx:id="ShowDictionary" layoutX="25.0" layoutY="188.0" mnemonicParsing="false" onAction="#showDictionary" text="Show Dictionary" />
+      <Button fx:id="LoadDictionary" layoutX="143.0" layoutY="188.0" mnemonicParsing="false" onAction="#loadDictionary" text="Load Dictionary" />
+      <Button fx:id="LoadCorpus" layoutX="25.0" layoutY="22.0" mnemonicParsing="false" onAction="#corpusPath" prefHeight="25.0" prefWidth="127.0" text="Load Corpus" />
+      <Button fx:id="SavePosting" layoutX="25.0" layoutY="70.0" mnemonicParsing="false" onAction="#postingPath" prefHeight="25.0" prefWidth="127.0" text="Save Posting" />
+      <TextField fx:id="txt_fiedPosting" layoutX="172.0" layoutY="70.0" />
+      <TextField fx:id="txt_fiedCorpus" layoutX="172.0" layoutY="22.0" onAction="#corpusPath" />
+      <CheckBox fx:id="Stemming" layoutX="353.0" layoutY="51.0" mnemonicParsing="false" onAction="#stemming" text="Stemming" />
+      <ComboBox fx:id="Languages" layoutX="380.0" layoutY="111.0" prefWidth="150.0" promptText="Languages" />
+      <Button fx:id="LoadQueryFile" layoutX="22.0" layoutY="295.0" mnemonicParsing="false" onAction="#queriesPath" prefHeight="25.0" prefWidth="112.0" text="Load Queries File" />
+      <TextField fx:id="txt_fiedInsertQuery" layoutX="127.0" layoutY="250.0" />
+      <Button fx:id="RunQuery" layoutX="285.0" layoutY="250.0" mnemonicParsing="false" onAction="#getQueryFromUser" text="Run Query" />
+      <Text layoutX="25.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Inseet Query" />
+      <TextField fx:id="txt_fiedQueries" layoutX="152.0" layoutY="295.0" />
+      <CheckBox fx:id="FilterByCity" layoutX="25.0" layoutY="363.0" mnemonicParsing="false" onAction="#FilterByCity" text="Filter by City" />
+      <CheckComboBox fx:id="Cities" layoutX="134.0" layoutY="359.0" prefWidth="150.0"  />
+   </children>
+</AnchorPane>
