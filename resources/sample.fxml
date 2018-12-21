@@ -23,7 +23,7 @@
       <Button fx:id="LoadQueryFile" layoutX="22.0" layoutY="295.0" mnemonicParsing="false" onAction="#queriesPath" prefHeight="25.0" prefWidth="112.0" text="Load Queries File" />
       <TextField fx:id="txt_fiedInsertQuery" layoutX="127.0" layoutY="250.0" />
       <Button fx:id="RunQuery" layoutX="285.0" layoutY="250.0" mnemonicParsing="false" onAction="#getQueryFromUser" text="Run Query" />
-      <Text layoutX="25.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Inseet Query" />
+      <Text layoutX="25.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert Query" />
       <TextField fx:id="txt_fiedQueries" layoutX="152.0" layoutY="295.0" />
       <CheckBox fx:id="FilterByCity" layoutX="25.0" layoutY="363.0" mnemonicParsing="false" onAction="#FilterByCity" text="Filter by City" />
       <CheckComboBox fx:id="Cities" layoutX="134.0" layoutY="359.0" prefWidth="150.0"  />
