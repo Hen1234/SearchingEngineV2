@@ -97,7 +97,7 @@ public class Ranker {
             cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()); //amount of appearances in the doc
             df = currentQueryTerm.getDf();  //the df of the term in the corpus
 
-            double temp = (cwd / d) * (Math.log10(N / df)) * (cwq/dQuery) * (Math.log10(N / df));
+            double temp = 2*Math.log10(N / df)* (cwd / d) * (cwq/dQuery);
             if(currentQueryTerm.isSynonym()){
 
                 Mone = Mone+ 0.5*temp;
@@ -112,14 +112,11 @@ public class Ranker {
 
             }
 
-
-
         }
 
         Mechane = Math.pow(firstSigmaMechane*secondSigmaMechane,(1/2));
         System.out.println("RankCosSim= "+Mone/Mechane);
         return (Mone/Mechane);
     }
-
 
 }

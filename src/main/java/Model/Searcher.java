@@ -24,7 +24,7 @@ public class Searcher {
     HashSet<String> citiesFromFilter; //hashSet for cities if the user chose filter by city
     static double avdl;
     static int numOfDocumentsInCorpus;
-    int countDocs;
+
 
 
     public Searcher() {
@@ -34,17 +34,11 @@ public class Searcher {
         RankedQueryDocs = new PriorityQueue();
         ranker = new Ranker();
         //numOfDocumentsInCorpus = Documents.size();
-        //citiesFromFilter = new HashSet<String>();
         citiesFromFilter = null;
         Documents = Indexer.docsHashMap;
-        countDocs = 0;
+
 
     }
-
-    //public void setQuery(ArrayList<QueryTerm> query) {
-//        this.query = query;
-//    }
-
 
     public void setQuery(String query) {
         this.query = query;
@@ -94,7 +88,7 @@ public class Searcher {
         queryAfterParse = ReadFile.p.parser(null, query, ReadFile.toStem, true);
         int queryAfterParseLengthBeforeAddSynonym = queryAfterParse.length();
         if (isSemantic) getSemanticSynonym();
-        String[] splitedQueryAfterParse = queryAfterParse.split(" ");
+        splitedQueryAfterParse = queryAfterParse.split(" ");
 
 
         for (int i = 0; i < splitedQueryAfterParse.length; i++) {
@@ -107,20 +101,15 @@ public class Searcher {
                 initQueryTermAndQueryDocs(curretTermOfQuery, false);
             }
 
-
-
-
         }
+        sendToRanker();
+        poll50MostRankedDocs();
 
-        Iterator it = docRelevantForTheQuery.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            ranker.getQueryDocFromSearcher((QueryDoc) pair.getValue(), splitedQueryAfterParse.length);
-            RankedQueryDocs.add((QueryDoc) pair.getValue());
-            System.out.println(docRelevantForTheQuery.size());
-            System.out.println(pair.getKey());
-        }
+    }
 
+    private void poll50MostRankedDocs() {
+
+        //poll the 50 most ranked docs from the qDocQueue
         int b = 0;
         while (!ranker.getqDocQueue().isEmpty() && b < 50) {
             QueryDoc currentQueryDocFromQueue = (QueryDoc) ranker.getqDocQueue().poll();
@@ -130,12 +119,32 @@ public class Searcher {
             b++;
         }
 
+        //set the rank of the rest of the docs in the queue to 0
         while (!ranker.getqDocQueue().isEmpty()) {
             QueryDoc currentQueryDocFromQueue = (QueryDoc) ranker.getqDocQueue().poll();
             currentQueryDocFromQueue.setRank(0);
         }
+        //init the HashMap of the relevantDoc
         docRelevantForTheQuery = new HashMap<>();
+        //init the qDocQueue
         ranker.setqDocQueue(new PriorityQueue<>());
+
+
+    }
+
+    private void sendToRanker() {
+
+        //iterate each relevant doc and send to Ranker
+        Iterator it = docRelevantForTheQuery.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            ranker.getQueryDocFromSearcher((QueryDoc) pair.getValue(), splitedQueryAfterParse.length);
+            RankedQueryDocs.add((QueryDoc) pair.getValue());
+            System.out.println(docRelevantForTheQuery.size());
+            System.out.println(pair.getKey());
+        }
+
+
 
     }
 
@@ -205,7 +214,6 @@ public class Searcher {
                 docNo = "";
                 tfString = "";
                 if (lineFromFile.charAt(k) == ':') {
-                    countDocs++;
                     k++;
 
                     //find the doc
