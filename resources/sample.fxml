@@ -26,6 +26,7 @@
       <Text layoutX="25.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert Query" />
       <TextField fx:id="txt_fiedQueries" layoutX="152.0" layoutY="295.0" />
       <CheckBox fx:id="FilterByCity" layoutX="25.0" layoutY="363.0" mnemonicParsing="false" onAction="#FilterByCity" text="Filter by City" />
+      <CheckBox fx:id="isSemantic" layoutX="25.0" layoutY="400.0" mnemonicParsing="false" onAction="#isSemantic" text="Add Semantic" />
       <CheckComboBox fx:id="Cities" layoutX="134.0" layoutY="359.0" prefWidth="150.0"  />
    </children>
 </AnchorPane>

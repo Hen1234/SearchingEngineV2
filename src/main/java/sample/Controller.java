@@ -53,6 +53,7 @@ public class Controller implements Initializable {
     public TextField txt_fiedInsertQuery;
     public CheckBox Stemming;
     public CheckBox FilterByCity;
+    public CheckBox isSemantic;
     public ComboBox Languages;
     //public ComboBox Cities;
     public CheckComboBox Cities;
@@ -366,6 +367,15 @@ public class Controller implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.show();
+
+    }
+
+    public void isSemantic(){
+
+        if (isSemantic.isSelected()) {
+
+            searcher.setSemantic(true);
+        }
 
     }
 

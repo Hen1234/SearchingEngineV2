@@ -14,6 +14,7 @@ public class QueryTerm {
     /*ArrayList<String> docs;
     ArrayList<Integer> timesInDocs;*/
     int appearanceInQuery; // number of appearance of this term in query
+    boolean isSynonym;
 
     public QueryTerm(String value) {
         /*docs = new ArrayList<String>();
@@ -22,6 +23,7 @@ public class QueryTerm {
         this.value = value;
         docsAndAmount = new HashMap<String, Integer>();
         df =0;
+        isSynonym = false;
     }
 
     public String getValue() {
@@ -50,6 +52,14 @@ public class QueryTerm {
 
     public void setDf(int df) {
         this.df = df;
+    }
+
+    public void setSynonym(boolean synonym) {
+        isSynonym = synonym;
+    }
+
+    public boolean isSynonym() {
+        return isSynonym;
     }
 
     public void setAppearanceInQuery(int appearanceInQuery) {

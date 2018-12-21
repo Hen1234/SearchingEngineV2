@@ -60,6 +60,8 @@ public class Ranker {
 
         //k=2, B=0.75
 
+        if(currentQueryTerm.isSynonym()) return 0.5*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+
         return Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl))))));
 
     }
@@ -95,9 +97,21 @@ public class Ranker {
             cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()); //amount of appearances in the doc
             df = currentQueryTerm.getDf();  //the df of the term in the corpus
 
-            Mone = Mone+ ((cwd / d) * (Math.log10(N / df)) * (cwq/dQuery) * (Math.log10(N / df)));
-            firstSigmaMechane = firstSigmaMechane+ Math.pow((cwd / d) * (Math.log10(N / df)),2);
-            secondSigmaMechane = secondSigmaMechane+ Math.pow((cwq/dQuery) * (Math.log10(N / df)),2);
+            double temp = (cwd / d) * (Math.log10(N / df)) * (cwq/dQuery) * (Math.log10(N / df));
+            if(currentQueryTerm.isSynonym()){
+
+                Mone = Mone+ 0.5*temp;
+                firstSigmaMechane = firstSigmaMechane+ 0.5*Math.pow((cwd / d) * (Math.log10(N / df)),2);
+                secondSigmaMechane = secondSigmaMechane+ 0.5*Math.pow((cwq/dQuery) * (Math.log10(N / df)),2);
+
+            }else{
+
+                Mone = Mone+ temp;
+                firstSigmaMechane = firstSigmaMechane+ Math.pow((cwd / d) * (Math.log10(N / df)),2);
+                secondSigmaMechane = secondSigmaMechane+ Math.pow((cwq/dQuery) * (Math.log10(N / df)),2);
+
+            }
+
 
 
         }
