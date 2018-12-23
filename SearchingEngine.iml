@@ -15,7 +15,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../VisualVMLauncher.jar!/" />
+          <root url="jar://$USER_HOME$/VisualVMLauncher.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -24,7 +24,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../CpuUsageIndicator/CpuUsageIndicator/lib/CpuUsageIndicator.jar!/" />
+          <root url="jar://$USER_HOME$/CpuUsageIndicator/CpuUsageIndicator/lib/CpuUsageIndicator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -40,5 +40,6 @@
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:8.40.14" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.8.1" level="project" />
   </component>
 </module>

@@ -1,5 +1,7 @@
 package Model;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -235,18 +237,19 @@ public class ReadFile {
         } catch (Exception e) {
         }
 
+        writeDocumentsAsObject();
         //write the Documents as object
-        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
-        ObjectOutputStream oos1 = null;
-        try {
-            oos1 = new ObjectOutputStream(new FileOutputStream(toWriteDocsObject));
-        } catch (IOException e) {
-        }
-        try {
-            oos1.writeObject(indexer.getDocsHashMap());
-            oos1.close();
-        } catch (Exception e) {
-        }
+//        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
+//        ObjectOutputStream oos1 = null;
+//        try {
+//            oos1 = new ObjectOutputStream(new FileOutputStream(toWriteDocsObject));
+//        } catch (IOException e) {
+//        }
+//        try {
+//            oos1.writeObject(indexer.getDocsHashMap());
+//            oos1.close();
+//        } catch (Exception e) {
+//        }
 
 
         citiesIndexer.APIConnection();
@@ -257,6 +260,16 @@ public class ReadFile {
         indexer.deleteTemporaryFiles(postingPath);
         createDocsPosting(indexer.getDocuments());
 
+    }
+
+    private void writeDocumentsAsObject() throws IOException {
+
+        byte[] input = SerializationUtils.serialize(indexer.getDocsHashMap());
+        byte[] encode = Base64.getEncoder().encode(input);
+        FileUtils.writeByteArrayToFile(new File(postingPath + "\\" + "DocsAsObject.txt"), encode);
+
+
+       // byte[] input = SerializationUtils
     }
 
     /**

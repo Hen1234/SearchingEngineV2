@@ -216,8 +216,6 @@ public class Indexer {
      */
     public void add(HashSet<Terms> tempDictionary, Docs currentDoc, int fileCount, String postingPath, boolean isStemming) {
 
-        System.out.println("here index");
-
         setPathDir(postingPath);
         //add the doc to the doc's hashset
         currentDoc.setUniqueWords(tempDictionary.size());
@@ -361,8 +359,6 @@ public class Indexer {
      */
     public void merge() throws IOException { /// to update pointer from dictionary to final posting
 
-        System.out.println("here merge");
-
         if (ReadFile.countFiles > 0) {
             try {
                 writeToFile();
@@ -445,10 +441,17 @@ public class Indexer {
 
             if (mergeQueue.size() > 0 && firstWordInLine(curTerm.getKey()).equals(firstWordInLine(mergeQueue.peek().getKey()))) {// equal terms in queue and outside
 
+                if(firstWordInLine(curTerm.getKey()).equals("FALKLAND")){
+                    System.out.println("Here Falkland Merge");
+                }
+
                 if (Character.isUpperCase(curTerm.getKey().charAt(0))) { // upper case
                     // upper case appear in dictionary as lower case
                     if (Dictionary.containsKey(firstWordInLine(curTerm.getKey().toLowerCase()))) {
                         Dictionary.remove(firstWordInLine(curTerm.getKey()).toUpperCase());
+
+                        System.out.println(firstWordInLine(curTerm.getKey()));
+
                         StringBuilder toInsertToBigLetterFile = new StringBuilder(firstWordInLine(curTerm.getKey()).toLowerCase() + "###" + restOfInLine(curTerm.getKey()));
                         while (firstWordInLine(mergeQueue.peek().getKey()).equals(firstWordInLine(curTerm.getKey()))) {
                             curTerm = mergeQueue.poll();

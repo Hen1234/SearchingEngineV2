@@ -66,6 +66,9 @@ public class Searcher {
         Dictionary = dictionary;
     }
 
+    public void setDocuments(HashMap<String, Docs> documents) {
+        Documents = documents;
+    }
 
     public ArrayList<String> getQueryResults() {
         return QueryResults;
@@ -334,21 +337,21 @@ public class Searcher {
         avdl = countDocsLength / Documents.size();
     }
 
-    private void loadDocuments() {
-
-        try {
-
-            FileInputStream f = new FileInputStream(new File(Indexer.pathDir + "\\" + "DocsAsObject.txt"));
-
-            ObjectInputStream o = new ObjectInputStream(f);
-            Documents = (HashMap<String, Docs>) o.readUnshared();
-            o.close();
-
-        } catch (Exception e) {
-        }
-
-
-    }
+//    private void loadDocuments() {
+//
+//        try {
+//
+//            FileInputStream f = new FileInputStream(new File(Indexer.pathDir + "\\" + "DocsAsObject.txt"));
+//
+//            ObjectInputStream o = new ObjectInputStream(f);
+//            Documents = (HashMap<String, Docs>) o.readUnshared();
+//            o.close();
+//
+//        } catch (Exception e) {
+//        }
+//
+//
+//    }
 
     /**
      * The method update the query with the synonym words
@@ -385,6 +388,7 @@ public class Searcher {
             e.printStackTrace();
         }
     }
+
 
 
 }

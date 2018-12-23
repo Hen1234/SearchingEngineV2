@@ -1,10 +1,7 @@
 package sample;
 
 
-import Model.City;
-import Model.Indexer;
-import Model.ReadFile;
-import Model.Searcher;
+import Model.*;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,16 +12,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.shape.Path;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.controlsfx.control.CheckComboBox;
 import sun.reflect.generics.tree.Tree;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,6 +37,7 @@ public class Controller implements Initializable {
     static ReadFile reader;
     static Searcher searcher;
     public TreeMap<String, String> Dictionary;
+    public HashMap<String, Docs> Documents;
     //public Stage stage;
     @FXML
 
@@ -65,6 +67,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
         try {
             reader = new ReadFile();
         } catch (Exception e) {
@@ -77,7 +81,7 @@ public class Controller implements Initializable {
         Stemming.setSelected(false);
         reset.setDisable(true);
         ShowDictionary.setDisable(true);
-        LoadDictionary.setDisable(true);
+
 
         FilterByCity.setSelected(false);
         RunQuery.setDisable(true);
@@ -306,6 +310,26 @@ public class Controller implements Initializable {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        loadDocuments();
+
+    }
+
+    private void loadDocuments() throws IOException {
+
+        String postpath;
+        if (Stemming.isSelected()) {
+            postpath = pathFromUser + "\\WithStemming";
+        } else {
+            postpath = pathFromUser + "\\WithoutStemming";
+        }
+
+        byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"DocsAsObject.txt"));
+        byte[] output = Base64.getMimeDecoder().decode(encode);
+        Object out = SerializationUtils.deserialize(output);
+        Documents = ((HashMap<String, Docs>)out);
+        searcher.setDocuments(Documents);
+
 
     }
 
