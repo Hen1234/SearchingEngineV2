@@ -329,7 +329,7 @@ public class Controller implements Initializable {
         Object out = SerializationUtils.deserialize(output);
         Documents = ((HashMap<String, Docs>)out);
         searcher.setDocuments(Documents);
-
+        reader.getIndexer().setDocsHashMap(Documents);
 
     }
 

@@ -17,6 +17,7 @@ public class Docs implements Serializable {
     // languages in doc
     private String language;
     private int docLength;
+    private String header;
 
     public void setDocLength(int docLength) {
         this.docLength = docLength;
@@ -143,4 +144,11 @@ public class Docs implements Serializable {
         return ((Docs) o).DocNo.equals(this.DocNo);
     }
 
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public String getHeader() {
+        return header;
+    }
 }
