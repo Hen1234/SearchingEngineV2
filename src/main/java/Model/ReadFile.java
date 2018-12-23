@@ -343,7 +343,7 @@ public class ReadFile {
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
 
-            Docs nextDoc = (Docs) ((Map.Entry) it.next()).getValue();
+            Docs nextDoc = (Docs) pair.getValue();
             PriorityQueue<TermsPerDoc> docQueue = nextDoc.getMostFiveFrequencyEssences();
             StringBuilder FiveMostFreqEssences = new StringBuilder("");
             while(!docQueue.isEmpty()){

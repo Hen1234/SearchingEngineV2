@@ -1,6 +1,11 @@
 package Model;
 
-public class TermsPerDoc implements Comparable  {
+import java.io.Serializable;
+
+/**
+ * The class is used to find the 5 most frequent essences
+ */
+public class TermsPerDoc implements Serializable, Comparable  {
 
 
     private int tf;

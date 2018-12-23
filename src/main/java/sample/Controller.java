@@ -110,6 +110,7 @@ public class Controller implements Initializable {
             try {
                 reader.ReadJsoup();
             } catch (Exception e) {
+                e.printStackTrace();
             }
             if (FirstPath.equals(""))
                 FirstPath = reader.getPostingPath();
