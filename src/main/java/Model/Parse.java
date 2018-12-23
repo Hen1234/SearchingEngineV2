@@ -29,6 +29,7 @@ public class Parse {
     private HashSet<String> Languages;
     //HashSet of cities
     private HashMap<String, City> cities;
+    static HashMap<String,HashSet<String>> termsInHeaderToDoc; // key - header term, value - list of docs;
 
     // Hashmap that hold as key - city name and as object the rqual city object
     public HashMap<String, City> getCities() {
@@ -39,7 +40,7 @@ public class Parse {
      * Constructor- initialize the fields and call the initial methods
      */
     public Parse() {
-
+        termsInHeaderToDoc = new HashMap<String,HashSet<String>>();
         replacements = new HashMap<String, String>();
         stemmer = new Stemmer();
         stopWords = new HashSet<String>();
@@ -97,13 +98,12 @@ public class Parse {
      * @param doc- the current doc
      * @param t-   the text of the current doc
      */
-    public String parser(Docs doc, String t, boolean toStem, boolean isQuery) {
-
+    public String parser(Docs doc, String t, boolean toStem, boolean isQuery, boolean isHeader) {
 
         StringBuilder termsOfQuery = new StringBuilder("");
+        StringBuilder termsOfHeader = new StringBuilder("");
         //add the city to the HashMap
         if ((doc != null && doc.getCity() != null && (!cities.containsKey(doc.getCity())) && (!cities.containsKey(doc.getCity().toUpperCase())))) {
-
             cities.put(doc.getCity(), new City(doc.getCity()));
         }
         //add the language of the doc to the Languages HashSet
@@ -138,7 +138,7 @@ public class Parse {
                     && text[i + 2].equals("and") && isNumericStart(text[i + 3])) {
                 if (isStopWord(text[i + 1]) || isStopWord(text[i + 2]) || isStopWord(text[i + 3]))
                     continue;
-                if (!isQuery) {  //if is not query
+                if (!isQuery && !isHeader) {  //if is not query
                     addTheDictionary(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3], doc, i);
                     addTheDictionary(text[i + 1] + "-" + text[i + 3], doc, i);
                     addTheDictionary(text[i + 1], doc, i);
@@ -150,12 +150,22 @@ public class Parse {
                         termsOfQuery.append(stemmer.stemming(text[i + 1] + "-" + text[i + 3] + " "));
                         termsOfQuery.append(stemmer.stemming(text[i + 1] + " "));
                         termsOfQuery.append(stemmer.stemming(text[i + 3] + " "));
+                        termsOfHeader.append(stemmer.stemming(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " "));
+                        termsOfHeader.append(stemmer.stemming(text[i + 1] + "-" + text[i + 3] + " "));
+                        termsOfHeader.append(stemmer.stemming(text[i + 1] + " "));
+                        termsOfHeader.append(stemmer.stemming(text[i + 3] + " "));
+
                     }
                     else {
                         termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
                         termsOfQuery.append(text[i + 1] + "-" + text[i + 3] + " ");
                         termsOfQuery.append(text[i + 1] + " ");
                         termsOfQuery.append(text[i + 3] + " ");
+                        termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
+                        termsOfHeader.append(text[i + 1] + "-" + text[i + 3] + " ");
+                        termsOfHeader.append(text[i + 1] + " ");
+                        termsOfHeader.append(text[i + 3] + " ");
+
                     }
 
                 }
@@ -164,13 +174,15 @@ public class Parse {
 
             }
             if (isContainDash(text[i])) {
-                if (!isQuery) {
+                if (!isQuery && !isHeader) {
                     addTheDictionary(text[i], doc, i);
                 } else {
                     if (toStem){
                         termsOfQuery.append(text[i]+" ");
+                        termsOfHeader.append(text[i]+" ");
                     } else
                         termsOfQuery.append(stemmer.stemming(text[i]+" "));
+                         termsOfHeader.append(stemmer.stemming(text[i]+" "));
                 }
 
                 continue;
@@ -180,13 +192,15 @@ public class Parse {
                 //text.set(i, replaceOby0(text.get(i))); /// replace O by 0
                 text[i] = replaceOby0(text[i]); /// replace O by 0
                 if (isUSDollars(text, i)) { // 320 million U.S. dollars
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(usDollarsConvert(text[i], text[i + 1]), doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(usDollarsConvert(text[i], text[i + 1])+" "));
+                            termsOfHeader.append(stemmer.stemming(usDollarsConvert(text[i], text[i + 1])+" "));
                         }else
                             termsOfQuery.append(usDollarsConvert(text[i], text[i + 1])+" ");
+                            termsOfHeader.append(usDollarsConvert(text[i], text[i + 1])+" ");
                     }
                     i = i + 3;
                     continue;
@@ -196,14 +210,16 @@ public class Parse {
                     if (i + 2 < text.length && text[i + 2].equals("Dollars")) {
                         if (isStopWord(text[i + 1]) || isStopWord(text[i + 2]))
                             continue;
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + "000" + " M Dollars", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + "000" + " M Dollars "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + "000" + " M Dollars "));
                             }
                                 else
                                     termsOfQuery.append(text[i] + "000" + " M Dollars ");
+                                    termsOfHeader.append(text[i] + "000" + " M Dollars ");
                         }
 
                         //terms.add(doc.getText().get(i) + "000" + " M Dollars");
@@ -215,13 +231,15 @@ public class Parse {
                     if (i + 2 < text.length && text[i + 2].equals("Dollars")) {
                         if (isStopWord(text[i + 1]) || isStopWord(text[i + 2]))
                             continue;
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + " M Dollars", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + " M Dollars "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + " M Dollars "));
                             }else
                                 termsOfQuery.append(text[i] + " M Dollars ");
+                                termsOfHeader.append(text[i] + " M Dollars ");
                         }
 
                         //terms.add(doc.getText().get(i) + " M Dollars");
@@ -234,13 +252,15 @@ public class Parse {
                     if (isStopWord(text[i + 1]) || isStopWord(text[i + 2]))
                         continue;
                     //terms.add(doc.getText().get(i) + " " + doc.getText().get(i + 1) + " " + doc.getText().get(i + 2));
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i] + " " + text[i + 1] + " " + text[i + 2], doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i] + " " + text[i + 1] + " " + text[i + 2]+" "));
+                            termsOfHeader.append(stemmer.stemming(text[i] + " " + text[i + 1] + " " + text[i + 2]+" "));
                         }else
                             termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2]+" ");
+                            termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2]+" ");
                     }
 
                     i = i + 2;
@@ -256,27 +276,31 @@ public class Parse {
                         tmp = fromStringToDouble(text[i]) / 1000000;
                         if (isContainDot(tmp.toString())) { //////// string contain dot
                             int j = tmp.intValue();
-                            if (!isQuery) {
+                            if (!isQuery && !isHeader) {
                                 addTheDictionary(j + " M Dollars", doc, i);
                             } else {
                                 if (toStem){
                                     termsOfQuery.append(stemmer.stemming(j + " M Dollars "));
+                                    termsOfHeader.append(stemmer.stemming(j + " M Dollars "));
                                 }else
                                     termsOfQuery.append(j + " M Dollars ");
+                                    termsOfHeader.append(j + " M Dollars ");
                             }
 
                             i = i + 1;
                             continue;
                         }
 
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(Double.toString(tmp) + " M Dollars", doc, i);
                         } else {
                             try {
                                 if (toStem) {
                                     termsOfQuery.append(stemmer.stemming(Double.toString(tmp) + " M Dollars "));
+                                    termsOfHeader.append(stemmer.stemming(Double.toString(tmp) + " M Dollars "));
                                 } else
                                     termsOfQuery.append(Double.toString(tmp) + " M Dollars ");
+                                    termsOfHeader.append(Double.toString(tmp) + " M Dollars ");
                             }
                                 catch (Exception e){}
                         }
@@ -285,13 +309,15 @@ public class Parse {
                         continue;
                     } else { //1.7320 Dollars
                         //terms.add(doc.getText().get(i) + " Dollars");
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + " Dollars", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + " Dollars "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + " Dollars "));
                             }else
                             termsOfQuery.append(text[i] + " Dollars ");
+                            termsOfHeader.append(text[i] + " Dollars ");
                         }
 
                         i = i + 1;
@@ -305,13 +331,15 @@ public class Parse {
                     if (text[i].length() == 1)
                         if (isStopWord(text[i + 1]))
                             continue;
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(months.get(text[i + 1]) + "-0" + text[i], doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(months.get(text[i + 1]) + "-0" + text[i]+" "));
+                            termsOfHeader.append(stemmer.stemming(months.get(text[i + 1]) + "-0" + text[i]+" "));
                         }else
                             termsOfQuery.append(months.get(text[i + 1]) + "-0" + text[i]+" ");
+                            termsOfHeader.append(months.get(text[i + 1]) + "-0" + text[i]+" ");
                     }
 
                     //else addTheDictionary(months.get(text[i + 1]) + "-" + text[i], doc);
@@ -324,13 +352,15 @@ public class Parse {
                         if (isStopWord(text[i + 1]))
                             continue;
                         //terms.add(doc.getText().get(i) + "M");
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + "M", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + "M "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + "M "));
                             }else
                             termsOfQuery.append(text[i] + "M ");
+                            termsOfHeader.append(text[i] + "M ");
                         }
 
                         i++;
@@ -341,13 +371,15 @@ public class Parse {
                     if (text[i + 1].equals("Billion")) {
                         if (isStopWord(text[i + 1]))
                             continue;
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + "B", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + "B "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + "B "));
                             }else
                                 termsOfQuery.append(text[i] + "B ");
+                                termsOfHeader.append(text[i] + "B ");
                         }
 
                         i++;
@@ -358,13 +390,15 @@ public class Parse {
                     if (text[i + 1].equals("trillion") || text[i + 1].equals("Trillion")) {
                         if (isStopWord(text[i + 1]))
                             continue;
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + "00B", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + "00B "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + "00B "));
                             }else
                                 termsOfQuery.append(text[i] + "00B ");
+                                termsOfHeader.append(text[i] + "00B ");
                         }
 
                         i++;
@@ -375,13 +409,15 @@ public class Parse {
                     if (text[i + 1].equals("Thousand")) {
                         if (isStopWord(text[i + 1]))
                             continue;
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(text[i] + "K", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(text[i] + "K "));
+                                termsOfHeader.append(stemmer.stemming(text[i] + "K "));
                             }else
                                 termsOfQuery.append(text[i] + "K ");
+                                termsOfHeader.append(text[i] + "K ");
                         }
 
                         i++;
@@ -392,13 +428,15 @@ public class Parse {
                 // is % end or next word is percentage / percent
                 if (text[i].length() > 1 && isNumericStart(text[i]) &&
                         lastCharIsPercents(text[i])) {
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i], doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i]+" "));
+                            termsOfHeader.append(stemmer.stemming(text[i]+" "));
                         }else
                             termsOfQuery.append(text[i]+" ");
+                            termsOfHeader.append(text[i]+" ");
                     }
 
                     continue;
@@ -407,13 +445,15 @@ public class Parse {
                         (text[i + 1].equals("percent") || text[i + 1].equals("percentage"))) {
                     if (isStopWord(text[i + 1]))
                         continue;
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i] + "%", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i] + "% "));
+                            termsOfHeader.append(stemmer.stemming(text[i] + "% "));
                         }else
                             termsOfQuery.append(text[i] + "% ");
+                            termsOfHeader.append(text[i] + "% ");
                     }
 
                     i = i + 1;
@@ -426,13 +466,15 @@ public class Parse {
                 if (num >= 1000 && num < 1000000) {
                     num = num / 1000;
                     //terms.add(num.toString() + "K");
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(num.toString() + "K", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(num.toString() + "K "));
+                            termsOfHeader.append(stemmer.stemming(num.toString() + "K "));
                         }else
                             termsOfQuery.append(num.toString() + "K ");
+                            termsOfHeader.append(num.toString() + "K ");
                     }
 
                     continue;
@@ -440,13 +482,15 @@ public class Parse {
                 if (num >= 1000000 && num < 1000000000) {
                     num = num / 1000000;
                     //terms.add(num.toString() + "M");
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(num.toString() + "M", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(num.toString() + "M "));
+                            termsOfHeader.append(stemmer.stemming(num.toString() + "M "));
                         }else
                             termsOfQuery.append(num.toString() + "M ");
+                            termsOfHeader.append(num.toString() + "M ");
                     }
 
                     continue;
@@ -454,13 +498,15 @@ public class Parse {
                 if (num > 1000000000) {
                     num = num / 1000000000;
                     //terms.add(num.toString() + "B");
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(num.toString() + "B", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(num.toString() + "B "));
+                            termsOfHeader.append(stemmer.stemming(num.toString() + "B "));
                         }else
                             termsOfQuery.append(num.toString() + "B ");
+                            termsOfHeader.append(num.toString() + "B ");
                     }
 
                     continue;
@@ -475,14 +521,16 @@ public class Parse {
                     if (isStopWord(text[i + 1]))
                         continue;//June 4, JUNE 4
                     if (text[i + 1].length() == 1) {
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(months.get(text[i]) + "-0" + text[i + 1], doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(months.get(text[i]) + "-0" + text[i + 1]+" "));
+                                termsOfHeader.append(stemmer.stemming(months.get(text[i]) + "-0" + text[i + 1]+" "));
                             }
                             else
                             termsOfQuery.append(months.get(text[i]) + "-0" + text[i + 1]+" ");
+                            termsOfHeader.append(months.get(text[i]) + "-0" + text[i + 1]+" ");
                         }
 
                     }
@@ -497,13 +545,15 @@ public class Parse {
                     //terms.add(doc.getText().get(i + 1) + "-" + months.get(doc.getText().get(i)));
                     if (isStopWord(text[i + 1]))
                         continue;
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i + 1] + "-" + months.get(text[i]), doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i + 1] + "-" + months.get(text[i])+" "));
+                            termsOfHeader.append(stemmer.stemming(text[i + 1] + "-" + months.get(text[i])+" "));
                         }else
                             termsOfQuery.append(text[i + 1] + "-" + months.get(text[i])+" ");
+                            termsOfHeader.append(text[i + 1] + "-" + months.get(text[i])+" ");
                     }
 
                     i = i + 1;
@@ -520,13 +570,15 @@ public class Parse {
             if (isDollar((text[i])) && isNumericStart(text[i].substring(1, (text[i].length() - 1)))) {
                 if (i + 1 < text.length && text[i + 1].equals("billion")) { //$100 billion:
                     //terms.add(doc.getText().get(i).substring(1, (doc.getText().get(i).length() - 1)) + "000 M Dollars");
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i].substring(1, (text[i]).length()) + "000 M Dollars", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i].substring(1, (text[i]).length()) + "000 M Dollars "));
+                            termsOfHeader.append(stemmer.stemming(text[i].substring(1, (text[i]).length()) + "000 M Dollars "));
                         }else
                         termsOfQuery.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
+                        termsOfHeader.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
                     }
 
                     i = i + 1;
@@ -536,14 +588,16 @@ public class Parse {
                     //terms.add(doc.getText().get(i).substring(1, (doc.getText().get(i).length() - 1)) + " M Dollars");
                     if (isStopWord(text[i + 1]))
                         continue;
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i].substring(1, (text[i].length())) + " M Dollars", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i].substring(1, (text[i].length())) + " M Dollars "));
+                            termsOfHeader.append(stemmer.stemming(text[i].substring(1, (text[i].length())) + " M Dollars "));
 
                         }else
                         termsOfQuery.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
+                        termsOfHeader.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
                     }
 
                     i = i + 1;
@@ -556,13 +610,15 @@ public class Parse {
                 Double theNum = fromStringToDouble(theNumber);
                 if (theNum != null && theNum < 1000000) {
                     //terms.add(theNumber + " Dollars");
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(theNumber + " Dollars", doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(theNumber + " Dollars "));
+                            termsOfHeader.append(stemmer.stemming(theNumber + " Dollars "));
                         }else
                             termsOfQuery.append(theNumber + " Dollars ");
+                        termsOfHeader.append(theNumber + " Dollars ");
                     }
 
                     continue;
@@ -571,25 +627,29 @@ public class Parse {
                     theNum = theNum / 1000000;
                     if (isContainDot(theNum.toString())) { //////// string contain dot
                         int j = theNum.intValue();
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(j + " M Dollars", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(j + " M Dollars "));
+                                termsOfHeader.append(stemmer.stemming(j + " M Dollars "));
                             }else
                             termsOfQuery.append(j + " M Dollars ");
+                            termsOfHeader.append(j + " M Dollars ");
                         }
 
                         continue;
                     } else {
                         //terms.add(theNum.toString() + " M Dollars");
-                        if (!isQuery) {
+                        if (!isQuery && !isHeader) {
                             addTheDictionary(theNum.toString() + " M Dollars", doc, i);
                         } else {
                             if (toStem){
                                 termsOfQuery.append(stemmer.stemming(theNum.toString() + " M Dollars "));
+                                termsOfHeader.append(stemmer.stemming(theNum.toString() + " M Dollars "));
                             }else
                                 termsOfQuery.append(theNum.toString() + " M Dollars ");
+                                termsOfHeader.append(theNum.toString() + " M Dollars ");
                         }
 
                         continue;
@@ -602,13 +662,15 @@ public class Parse {
                         || text[i + 1].equals("PM") || text[i + 1].equals("pm")
                         || text[i + 1].equals("p.m.") || text[i + 1].equals("a.m.")
                         || text[i + 1].equals("P.M.") || text[i + 1].equals("A.M."))) {
-                    if (!isQuery) {
+                    if (!isQuery && !isHeader) {
                         addTheDictionary(text[i] + " " + text[i + 1], doc, i);
                     } else {
                         if (toStem){
                             termsOfQuery.append(stemmer.stemming(text[i] + " " + text[i + 1]+" "));
+                            termsOfHeader.append(stemmer.stemming(text[i] + " " + text[i + 1]+" "));
                         }else
                             termsOfQuery.append(text[i] + " " + text[i + 1]+" ");
+                            termsOfHeader.append(text[i] + " " + text[i + 1]+" ");
                     }
 
                     continue;
@@ -616,22 +678,45 @@ public class Parse {
                 }
             }
 
-            if (!isQuery) {
+            if (!isQuery && !isHeader) {
                 addTheDictionary(text[i], doc, i);
             }else{
                 if (toStem){
                     termsOfQuery.append(stemmer.stemming(text[i]+" "));
+                    termsOfHeader.append(stemmer.stemming(text[i]+" "));
                 }else
                 termsOfQuery.append(text[i]+" ");
+                termsOfHeader.append(text[i]+" ");
             }
 
         } //for
+        if (isHeader){
+            String[] splitedHeader = termsOfHeader.toString().split(" ");
+            HashSet <String> relevantDocs;
+            for (int i = 0; i < splitedHeader.length; i++) {
+                relevantDocs = termsInHeaderToDoc.get(splitedHeader[i]);
+                if (relevantDocs!=null){
+                    if (relevantDocs.contains(doc.getDocNo()))
+                        break;
+                    else
+                        relevantDocs.add(doc.getDocNo());
+                }
+                else{
+                    HashSet<String> temp = new HashSet<>();
+                    temp.add(doc.getDocNo());
+                    termsInHeaderToDoc.put(splitedHeader[i],temp);
+                }
+            }
+        }
         if(isQuery){
             if (toStem)
                 System.out.println(termsOfQuery.toString());
             return termsOfQuery.toString();
         }else{
-            return null;
+            if (isHeader)
+                return termsOfHeader.toString();
+            else
+                return null;
         }
     }
 
