@@ -302,7 +302,8 @@ public class Controller implements Initializable {
             f = new FileInputStream(new File(postpath + "\\" + "SortedAsObject.txt"));
             ObjectInputStream o = new ObjectInputStream(f);
             Dictionary = (TreeMap<String, String>) o.readObject();
-            searcher.setDictionary(Dictionary);
+            reader.getIndexer().setSorted(Dictionary);
+            //searcher.setDictionary(Dictionary);
             o.close();
 
         } catch (IOException e) {
@@ -312,6 +313,7 @@ public class Controller implements Initializable {
         }
 
         loadDocuments();
+        reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
 
@@ -330,7 +332,7 @@ public class Controller implements Initializable {
         byte[] output = Base64.getMimeDecoder().decode(encode);
         Object out = SerializationUtils.deserialize(output);
         Documents = ((HashMap<String, Docs>)out);
-        searcher.setDocuments(Documents);
+        //searcher.setDocuments(Documents);
         reader.getIndexer().setDocsHashMap(Documents);
 
     }
