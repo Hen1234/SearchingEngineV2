@@ -82,7 +82,6 @@ public class Controller implements Initializable {
         reset.setDisable(true);
         ShowDictionary.setDisable(true);
 
-
         FilterByCity.setSelected(false);
         RunQuery.setDisable(true);
         LoadQueryFile.setDisable(true);
@@ -312,6 +311,8 @@ public class Controller implements Initializable {
         }
 
         loadDocuments();
+        ShowDictionary.setDisable(false);
+        RunQuery.setDisable(false);
 
     }
 
