@@ -258,7 +258,7 @@ public class ReadFile {
         } catch (Exception e) {
         }
         indexer.deleteTemporaryFiles(postingPath);
-        createDocsPosting(indexer.getDocuments());
+        createDocsPosting(indexer.getDocsHashMap());
 
     }
 
@@ -327,7 +327,7 @@ public class ReadFile {
      * @param docs
      * @throws IOException
      */
-    private void createDocsPosting(HashSet<Docs> docs) throws Exception {
+    private void createDocsPosting(HashMap<String,Docs> docs) throws Exception {
         String dirPath = indexer.getPathDir();
         File f = new File(dirPath + "\\" + "DocsPosting.txt");
         FileOutputStream fos = null;
@@ -338,11 +338,12 @@ public class ReadFile {
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         Writer w = new BufferedWriter(osr);
 
-        Iterator it = docs.iterator();
         StringBuilder text = new StringBuilder("");
+        Iterator it = docs.entrySet().iterator();
         while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
 
-            Docs nextDoc = (Docs) it.next();
+            Docs nextDoc = (Docs) ((Map.Entry) it.next()).getValue();
             PriorityQueue<TermsPerDoc> docQueue = nextDoc.getMostFiveFrequencyEssences();
             StringBuilder FiveMostFreqEssences = new StringBuilder("");
             while(!docQueue.isEmpty()){
