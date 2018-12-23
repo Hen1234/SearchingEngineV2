@@ -216,6 +216,8 @@ public class Indexer {
      */
     public void add(HashSet<Terms> tempDictionary, Docs currentDoc, int fileCount, String postingPath, boolean isStemming) {
 
+        System.out.println("here index");
+
         setPathDir(postingPath);
         //add the doc to the doc's hashset
         currentDoc.setUniqueWords(tempDictionary.size());
@@ -226,6 +228,9 @@ public class Indexer {
         //run the tempDic get from the parse
         while (iteratorDict.hasNext()) {
             Terms nextTerm = (Terms) iteratorDict.next();
+            if(nextTerm.getValue().equals("Falkland")){
+                System.out.println("Here Falkland doc");
+            }
             if (dfAndTotal.containsKey(nextTerm.getValue())) {
                 dfAndTotal.put(nextTerm.getValue(), new Pair<Integer, Integer>((dfAndTotal.get(nextTerm.getValue()).getKey() + 1), dfAndTotal.get(nextTerm.getValue()).getValue() + nextTerm.getDocsAndAmount().get(currentDoc).getKey()));
             } else {
@@ -355,6 +360,9 @@ public class Indexer {
      * @throws IOException
      */
     public void merge() throws IOException { /// to update pointer from dictionary to final posting
+
+        System.out.println("here merge");
+
         if (ReadFile.countFiles > 0) {
             try {
                 writeToFile();
@@ -436,6 +444,7 @@ public class Indexer {
             }
 
             if (mergeQueue.size() > 0 && firstWordInLine(curTerm.getKey()).equals(firstWordInLine(mergeQueue.peek().getKey()))) {// equal terms in queue and outside
+
                 if (Character.isUpperCase(curTerm.getKey().charAt(0))) { // upper case
                     // upper case appear in dictionary as lower case
                     if (Dictionary.containsKey(firstWordInLine(curTerm.getKey().toLowerCase()))) {

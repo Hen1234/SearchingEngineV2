@@ -99,6 +99,7 @@ public class Parse {
      */
     public String parser(Docs doc, String t, boolean toStem, boolean isQuery) {
 
+
         StringBuilder termsOfQuery = new StringBuilder("");
         //add the city to the HashMap
         if ((doc != null && doc.getCity() != null && (!cities.containsKey(doc.getCity())) && (!cities.containsKey(doc.getCity().toUpperCase())))) {
@@ -114,6 +115,10 @@ public class Parse {
         setToStem(toStem);
         String[] text = t.split(" ");
         for (int i = 0; i < text.length; i++) {
+
+            if(text[i].equals("Falkland")){
+                System.out.println("Here Falkland doc");
+            }
             if (isStopWord(text[i]))
                 continue;
 
@@ -987,29 +992,29 @@ public class Parse {
                 return;
             }
             // DOG in tempdictionary and dog in termValue
-            if(Character.isLowerCase(termValue.charAt(0)) && term.getValue().equals(termValue.toUpperCase())){
-                term.setValue(termValue);
-                if (term.getDocsAndAmount().containsKey(doc)) { //if the term exists the given doc
-                    Pair<Integer, StringBuilder> newPir = new Pair<Integer, StringBuilder>(term.getDocsAndAmount().get(doc).getKey() + 1, term.getDocsAndAmount().get(doc).getValue().append(" ,").append(i));
-                    term.getDocsAndAmount().put(doc, newPir);
-                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
-                    if (cities.containsKey(tempCity) && !isProblem) { //if a city
-                        cities.get(tempCity).getLocations().get(doc.getDocNo()).append(" ,").append(i);
-                    }
-
-
-                } else {
-                    term.getDocsAndAmount().put(doc, new Pair<Integer, StringBuilder>(1, new StringBuilder("").append(i))); //if the term does not exist the given doc
-                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
-                    //String tempUpper = termValue.charAt(0) + termValue.substring(1, termValue.length()).toLowerCase();
-                    if (cities.containsKey(tempCity) && !isProblem) {//|| cities.containsKey(tempCity.toUpperCase())|| cities.containsKey(tempCity.toLowerCase())) {  //if a city
-                        cities.get(tempCity).getLocations().put(doc.getDocNo(), new StringBuilder("").append(i));
-
-                    }
-                }
-                term.totalInCorpus++;
-                return;
-            }
+//            if(Character.isLowerCase(termValue.charAt(0)) && term.getValue().equals(termValue.toUpperCase())){
+//                term.setValue(termValue);
+//                if (term.getDocsAndAmount().containsKey(doc)) { //if the term exists the given doc
+//                    Pair<Integer, StringBuilder> newPir = new Pair<Integer, StringBuilder>(term.getDocsAndAmount().get(doc).getKey() + 1, term.getDocsAndAmount().get(doc).getValue().append(" ,").append(i));
+//                    term.getDocsAndAmount().put(doc, newPir);
+//                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
+//                    if (cities.containsKey(tempCity) && !isProblem) { //if a city
+//                        cities.get(tempCity).getLocations().get(doc.getDocNo()).append(" ,").append(i);
+//                    }
+//
+//
+//                } else {
+//                    term.getDocsAndAmount().put(doc, new Pair<Integer, StringBuilder>(1, new StringBuilder("").append(i))); //if the term does not exist the given doc
+//                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
+//                    //String tempUpper = termValue.charAt(0) + termValue.substring(1, termValue.length()).toLowerCase();
+//                    if (cities.containsKey(tempCity) && !isProblem) {//|| cities.containsKey(tempCity.toUpperCase())|| cities.containsKey(tempCity.toLowerCase())) {  //if a city
+//                        cities.get(tempCity).getLocations().put(doc.getDocNo(), new StringBuilder("").append(i));
+//
+//                    }
+//                }
+//                term.totalInCorpus++;
+//                return;
+//            }
         }
 
         Terms newTerm = new Terms(termValue); //if the term does not exist the tempDictionary
