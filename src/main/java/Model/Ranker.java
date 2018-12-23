@@ -62,10 +62,10 @@ public class Ranker {
 
         //k=2, B=0.75
 
-        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.header.contains(currentQueryTerm.value) )
+        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() )
             return 0.5*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
 
-        if(currentQueryDoc.header.contains(currentQueryTerm.value) && !currentQueryTerm.isSynonym())
+        if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
             return 2*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
 
 

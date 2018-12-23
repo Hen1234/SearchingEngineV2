@@ -9,15 +9,21 @@ public class QueryDoc implements Comparable {
     HashMap<String, QueryTerm> queryTermsInDocsAndQuery;
     int length;
     double rank;
-    String header;
+    boolean containsQueryTermInHeader;
 
     public QueryDoc(String docNO) {
-        header = "";
         this.docNO = docNO;
         queryTermsInDocsAndQuery = new HashMap<>();
+        containsQueryTermInHeader=false;
     }
 
+    public boolean isContainsQueryTermInHeader() {
+        return containsQueryTermInHeader;
+    }
 
+    public void setContainsQueryTermInHeader(boolean containsQueryTermInHeader) {
+        this.containsQueryTermInHeader = containsQueryTermInHeader;
+    }
 
     public String getDocNO() {
         return docNO;
@@ -70,11 +76,4 @@ public class QueryDoc implements Comparable {
                 '}';
     }
 
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
 }

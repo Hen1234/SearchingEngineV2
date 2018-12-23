@@ -707,6 +707,8 @@ public class Parse {
                     termsInHeaderToDoc.put(splitedHeader[i],temp);
                 }
             }
+            System.out.println("size: "+termsInHeaderToDoc.size());
+            System.out.println();
         }
         if(isQuery){
             if (toStem)

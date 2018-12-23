@@ -35,7 +35,7 @@ public class Searcher {
         //numOfDocumentsInCorpus = Documents.size();
         citiesFromFilter = null;
         Documents = Indexer.docsHashMap;
-        Dictionary= Indexer.sorted;
+        Dictionary = Indexer.sorted;
 
     }
 
@@ -81,7 +81,7 @@ public class Searcher {
 
         //init the Documents and Dictionary HashMap from the index
         Documents = Indexer.docsHashMap;
-        Dictionary= Indexer.sorted;
+        Dictionary = Indexer.sorted;
         //initAvdl
         initAvdl();
         //init the size of the numOfDocumentsInCorpus
@@ -98,16 +98,46 @@ public class Searcher {
 
             //if the word is a synonym
             if (isSemantic && i > queryAfterParseLengthBeforeAddSynonym) {
-                initQueryTermAndQueryDocs(curretTermOfQuery, true);
+                QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, true);
+                addDocsRelevantFromHeaders(current);
+
             } else {
-                initQueryTermAndQueryDocs(curretTermOfQuery, false);
+                QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, false);
+                addDocsRelevantFromHeaders(current);
+
             }
 
         }
+
+
         sendToRanker();
         poll50MostRankedDocs();
 
     }
+
+    private void addDocsRelevantFromHeaders(QueryTerm current) {
+        System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeeeeee");
+
+        HashSet<String> temp = Parse.termsInHeaderToDoc.get(current.getValue());
+        if (temp != null) { // the term doesnt exist in any header
+            Iterator it = temp.iterator();
+            while (it.hasNext()) {
+                String docName = (String) it.next();
+                System.out.println("itratorDocsHeader: "+docName);
+                if (!docRelevantForTheQuery.containsKey(docName)) {
+                    QueryDoc toInsert = new QueryDoc(docName);
+                    toInsert.setLength(Documents.get(docName).getDocLength());
+                    toInsert.getQueryTermsInDocsAndQuery().put(current.getValue(), current);
+                    toInsert.setContainsQueryTermInHeader(true);
+                    docRelevantForTheQuery.put(toInsert.getDocNO(), toInsert);
+
+                }
+            }
+        }
+
+
+    }
+
 
     private void poll50MostRankedDocs() {
 
@@ -150,42 +180,23 @@ public class Searcher {
     }
 
 
-    private void initQueryTermAndQueryDocs(String StringcurretTermOfQuery, boolean isSynonym) {
+    private QueryTerm initQueryTermAndQueryDocs(String StringcurretTermOfQuery, boolean isSynonym) {
+
         QueryTerm currentQueryTerm = null;
+
         //check if the term exists the dictionary
-
-        //the user load the Dictionary
-        if (Indexer.sorted == null) {
-            if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
+        if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
+            //create a new QueryTerm
+            currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
+            //update isSynonym
+            if (isSynonym) currentQueryTerm.setSynonym(true);
+        } else {
+            //toUpperCase
+            if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
                 //create a new QueryTerm
-                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
-                //update isSynonym
+                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
                 if (isSynonym) currentQueryTerm.setSynonym(true);
-            } else {
-                //toUpperCase
-                if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
-                    //create a new QueryTerm
-                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
-                    if (isSynonym) currentQueryTerm.setSynonym(true);
-                }
             }
-
-        }
-        //the Dictionary(sorted) is in the memory
-        else {
-            if (Indexer.sorted.containsKey(StringcurretTermOfQuery.toLowerCase())) {
-                //create a new QueryTerm
-                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
-                if (isSynonym) currentQueryTerm.setSynonym(true);
-            } else {
-                //toUpperCase
-                if (Indexer.sorted.containsKey(StringcurretTermOfQuery.toUpperCase())) {
-                    //create a new QueryTerm
-                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
-                    if (isSynonym) currentQueryTerm.setSynonym(true);
-                }
-            }
-
         }
 
         if (currentQueryTerm != null) {
@@ -249,7 +260,6 @@ public class Searcher {
                                     //add the QueryTerm to the relevant doc
                                     QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
                                     newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
-                                    newQueryDoc.setHeader(ReadFile.p.parser(docFromOriginalDocs, docFromOriginalDocs.getHeader(), ReadFile.toStem, false, true));
                                     //add the QueryTerm to the relevant doc
                                     newQueryDoc.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
                                     //add the new QueryDoc to the HashSet of the relevant docs for the query
@@ -257,32 +267,11 @@ public class Searcher {
 
                                     if (!docRelevantForTheQuery.containsKey(newQueryDoc.getDocNO()))
                                         docRelevantForTheQuery.put(newQueryDoc.getDocNO(), newQueryDoc);
-                                    else {
-                                        String[] splitedHeader = newQueryDoc.header.split(" ");
-                                        for (int i = 0; i < splitedHeader.length; i++) {
-                                            if (!currentQueryTerm.getValue().equals(splitedHeader[i]))
-                                                continue;
-                                            else {
-                                                HashSet<String> temp = Parse.termsInHeaderToDoc.get(splitedHeader[i]);
-                                                if (temp != null) {
-                                                    Iterator it = temp.iterator();
-                                                    while (it.hasNext()) {
-                                                        String docName = (String) it.next();
-                                                        if (!docRelevantForTheQuery.containsKey(docName)) {
-                                                            QueryDoc toInsert = new QueryDoc(docName);
-                                                            toInsert.setLength(Documents.get(docName).getDocLength());
-                                                            toInsert.setHeader(Documents.get(docName).getHeader());
-                                                            toInsert.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
-                                                            docRelevantForTheQuery.put(docName, toInsert);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
 
 
                                 }
+
+
                             }
 
                             //there is no filter by city
@@ -293,7 +282,6 @@ public class Searcher {
                             currentQueryTerm.getDocsAndAmount().put(docNo, tf);
 
                             QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
-                            newQueryDoc.setHeader(ReadFile.p.parser(null, docFromOriginalDocs.getHeader(), ReadFile.toStem, false, true));
                             //set the length of the relevant doc
                             newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
                             //add the QueryTerm to the relevant doc
@@ -301,31 +289,8 @@ public class Searcher {
                             //add the new QueryDoc to the HashSet of the relevant docs for the query
                             if (!docRelevantForTheQuery.containsKey(newQueryDoc.getDocNO()))
                                 docRelevantForTheQuery.put(newQueryDoc.getDocNO(), newQueryDoc);
-                            else {
-                                String[] splitedHeader = newQueryDoc.header.split(" ");
-                                for (int i = 0; i < splitedHeader.length; i++) {
-                                    if (!currentQueryTerm.getValue().equals(splitedHeader[i]))
-                                        continue;
-                                    else {
-                                        HashSet<String> temp = Parse.termsInHeaderToDoc.get(splitedHeader[i]);
-                                        if (temp != null) {
-                                            Iterator it = temp.iterator();
-                                            while (it.hasNext()) {
-                                                String docName = (String) it.next();
-                                                if (!docRelevantForTheQuery.containsKey(docName)) {
-                                                    QueryDoc toInsert = new QueryDoc(docName);
-                                                    toInsert.setLength(Documents.get(docName).getDocLength());
-                                                    toInsert.setHeader(Documents.get(docName).getHeader());
-                                                    toInsert.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
-                                                    docRelevantForTheQuery.put(docName, toInsert);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
 
+                        }
                     }
 
 
@@ -356,6 +321,7 @@ public class Searcher {
 
             }
 
+
             //update the amount of appearence in the query
             for (int i = 0; i < splitedQueryAfterParse.length; i++) {
 
@@ -368,6 +334,8 @@ public class Searcher {
             }
 
         }
+
+        return currentQueryTerm;
 
     }
 
