@@ -37,7 +37,6 @@ public class Searcher {
         citiesFromFilter = null;
         Documents = Indexer.docsHashMap;
 
-
     }
 
     public void setQuery(String query) {

@@ -151,7 +151,6 @@ public class ReadFile {
 
         File resource = new File(corpusPath);
         File[] Directories = resource.listFiles();
-
         for (File dir : Directories) {
             if (dir.getName().equals("stop_words.txt"))
                 continue;
@@ -176,6 +175,7 @@ public class ReadFile {
                     serial = element.select("DOCNO").text();
                     text = replaceFromMap(text, this.replacements);
                     Docs curerntDoc = new Docs(serial, city, element.select("DATE1").text());
+                    curerntDoc.setHeader(element.select("TI").text());
                     String findTheCity = findCity(element.outerHtml());
                     for (int i = 0; i < findTheCity.length(); i++) {
                         if (Character.isDigit(findTheCity.charAt(i)) || findTheCity.length()<2 ||

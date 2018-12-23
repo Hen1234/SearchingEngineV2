@@ -23,8 +23,6 @@ public class Indexer {
     private HashMap<String, String> Dictionary; //String - term value , Integer - line number in posting file
     //Hashmap for replacing char to his numeric value by O(1)
     private HashMap<Character, Integer> replaceCharWithInt;
-    // set of Documents holding all of the Documents in corpus
-    private HashSet<Docs> documents;
     // sorted dictionary hold as key => the term, value=>file number in posting, pointer to exact line
     static TreeMap<String, String> sorted;
     // HashMap fot docs
@@ -69,7 +67,6 @@ public class Indexer {
         osr = new ArrayList<>();
         bw = new ArrayList<>();
         dfAndTotal = new HashMap<String, Pair<Integer, Integer>>();
-        documents = new HashSet<Docs>();
         cache = new TreeMap<String, ArrayList<StringBuilder>>();    //(new Indexer.MyComperator());
         Dictionary = new HashMap<String, String>();  ///////**********add pointer to posting
         toWriteidx = 1;
@@ -98,10 +95,6 @@ public class Indexer {
      *
      * @return
      */
-    public HashSet<Docs> getDocuments() {
-        return documents;
-    }
-
     /**
      * getter
      *
@@ -219,7 +212,6 @@ public class Indexer {
         setPathDir(postingPath);
         //add the doc to the doc's hashset
         currentDoc.setUniqueWords(tempDictionary.size());
-        documents.add(currentDoc);
         docsHashMap.put(currentDoc.getDocNo(), currentDoc);
         Iterator<Terms> iteratorDict = tempDictionary.iterator();
 
@@ -920,6 +912,13 @@ public class Indexer {
         return splited[1];
     }
 
+    public void setDocsHashMap(HashMap<String, Docs> docsHashMap) {
+        Indexer.docsHashMap = docsHashMap;
+    }
+
+    public HashMap<String, Docs> getDocuments() {
+        return docsHashMap;
+    }
 
     /**
      * compare between two pair - by their alphabetic value of the key
