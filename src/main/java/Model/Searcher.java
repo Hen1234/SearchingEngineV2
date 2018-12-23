@@ -36,6 +36,7 @@ public class Searcher {
         //numOfDocumentsInCorpus = Documents.size();
         citiesFromFilter = null;
         Documents = Indexer.docsHashMap;
+        Dictionary = Indexer.sorted;
 
     }
 
@@ -79,6 +80,9 @@ public class Searcher {
 
     public void pasreQuery(String query) throws IOException {
 
+
+        Documents = Indexer.docsHashMap;
+        Dictionary = Indexer.sorted;
         //init the Documents HashMap from the index
         //loadDocuments();
 
@@ -154,50 +158,29 @@ public class Searcher {
     private void initQueryTermAndQueryDocs(String StringcurretTermOfQuery, boolean isSynonym) {
         QueryTerm currentQueryTerm = null;
         //check if the term exists the dictionary
-
-        //the user load the Dictionary
-        if (Indexer.sorted == null) {
-            if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
+        if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
+            //create a new QueryTerm
+            currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
+            //update isSynonym
+            if(isSynonym) currentQueryTerm.setSynonym(true);
+        } else {
+            //toUpperCase
+            if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
                 //create a new QueryTerm
-                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
-                //update isSynonym
+                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
                 if(isSynonym) currentQueryTerm.setSynonym(true);
-            } else {
-                //toUpperCase
-                if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
-                    //create a new QueryTerm
-                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
-                    if(isSynonym) currentQueryTerm.setSynonym(true);
-                }
             }
-
         }
-        //the Dictionary(sorted) is in the memory
-        else {
-            if (Indexer.sorted.containsKey(StringcurretTermOfQuery.toLowerCase())) {
-                //create a new QueryTerm
-                currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
-                if(isSynonym) currentQueryTerm.setSynonym(true);
-            } else {
-                //toUpperCase
-                if (Indexer.sorted.containsKey(StringcurretTermOfQuery.toUpperCase())) {
-                    //create a new QueryTerm
-                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
-                    if(isSynonym) currentQueryTerm.setSynonym(true);
-                }
-            }
 
-        }
 
         if (currentQueryTerm != null) {
-
 
             //take the term's pointer from the dictionary
             String pointer = Indexer.sorted.get(currentQueryTerm.getValue());
             String[] numOfFileAndLineOfTerm = pointer.split(",");
             String fileNum = numOfFileAndLineOfTerm[0];
             String lineNum = numOfFileAndLineOfTerm[1];
-            Integer lineNumInt = Integer.parseInt(lineNum) - 1;
+            Integer lineNumInt = Integer.parseInt(lineNum)-1;
             String lineFromFile = "";
             try {
                 //doc:FBIS3-29#2=27066 ,27079 doc:FBIS3-5232#1=481 DF- 2 TIC- 3

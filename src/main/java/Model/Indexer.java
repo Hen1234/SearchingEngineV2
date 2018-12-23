@@ -131,6 +131,10 @@ public class Indexer {
         return sorted;
     }
 
+    public void setSorted(TreeMap<String, String> sorted) {
+        Indexer.sorted = sorted;
+    }
+
     public HashMap<String, Docs> getDocsHashMap() {
         return docsHashMap;
     }
