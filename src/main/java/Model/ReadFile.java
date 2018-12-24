@@ -203,9 +203,9 @@ public class ReadFile {
 
 
                     curerntDoc.setLanguage(findTheLanguage);
-                    p.parser(curerntDoc, text, toStem,false,false);
-                    p.parser(curerntDoc, curerntDoc.getHeader(), toStem,false,true);
 
+                    curerntDoc.setHeader(p.parser(curerntDoc, curerntDoc.getHeader(), toStem,false,true));
+                    p.parser(curerntDoc, text, toStem,false,false);
 
 
                     indexer.add(p.getTempDictionary(), curerntDoc, ReadFile.countFiles, postingPath, toStem);

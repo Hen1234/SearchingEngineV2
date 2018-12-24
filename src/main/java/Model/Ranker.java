@@ -1,6 +1,5 @@
 package Model;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -39,11 +38,7 @@ public class Ranker {
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
             currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.75*BM25func(currentQueryTerm, currentQueryDoc));
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
-
-
-
         }
-
         //update the currentQueryDoc's rank by cosSim
         currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
         qDocQueue.add(currentQueryDoc);
