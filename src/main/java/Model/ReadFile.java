@@ -157,7 +157,7 @@ public class ReadFile {
             files = dir.listFiles();
 
             for (File f : files) {
-                System.out.println(f.getName());
+                System.out.println("file name: "+f.getName());
                 ReadFile.countFiles++;
                 Document doc = null;
                 try {

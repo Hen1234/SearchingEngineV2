@@ -222,9 +222,6 @@ public class Indexer {
         //run the tempDic get from the parse
         while (iteratorDict.hasNext()) {
             Terms nextTerm = (Terms) iteratorDict.next();
-            if(nextTerm.getValue().equals("Falkland")){
-                System.out.println("Here Falkland doc");
-            }
             if (dfAndTotal.containsKey(nextTerm.getValue())) {
                 dfAndTotal.put(nextTerm.getValue(), new Pair<Integer, Integer>((dfAndTotal.get(nextTerm.getValue()).getKey() + 1), dfAndTotal.get(nextTerm.getValue()).getValue() + nextTerm.getDocsAndAmount().get(currentDoc).getKey()));
             } else {
@@ -437,16 +434,12 @@ public class Indexer {
 
             if (mergeQueue.size() > 0 && firstWordInLine(curTerm.getKey()).equals(firstWordInLine(mergeQueue.peek().getKey()))) {// equal terms in queue and outside
 
-                if(firstWordInLine(curTerm.getKey()).equals("FALKLAND")){
-                    System.out.println("Here Falkland Merge");
-                }
-
                 if (Character.isUpperCase(curTerm.getKey().charAt(0))) { // upper case
                     // upper case appear in dictionary as lower case
                     if (Dictionary.containsKey(firstWordInLine(curTerm.getKey().toLowerCase()))) {
                         Dictionary.remove(firstWordInLine(curTerm.getKey()).toUpperCase());
 
-                        System.out.println(firstWordInLine(curTerm.getKey()));
+                        //System.out.println(firstWordInLine(curTerm.getKey()));
 
                         StringBuilder toInsertToBigLetterFile = new StringBuilder(firstWordInLine(curTerm.getKey()).toLowerCase() + "###" + restOfInLine(curTerm.getKey()));
                         while (firstWordInLine(mergeQueue.peek().getKey()).equals(firstWordInLine(curTerm.getKey()))) {

@@ -117,8 +117,12 @@ public class Searcher {
 
     private void addDocsRelevantFromHeaders(QueryTerm current) {
         System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeeeeee");
-
-        HashSet<String> temp = Parse.termsInHeaderToDoc.get(current.getValue());
+        Stemmer stem = new Stemmer();
+        HashSet<String> temp;
+        if (!ReadFile.toStem)
+            temp = Parse.termsInHeaderToDoc.get(current.getValue().toLowerCase());
+        else
+            temp = Parse.termsInHeaderToDoc.get(stem.stemming(current.getValue().toLowerCase()));
         if (temp != null) { // the term doesnt exist in any header
             Iterator it = temp.iterator();
             while (it.hasNext()) {
@@ -129,17 +133,15 @@ public class Searcher {
                     toInsert.setLength(Documents.get(docName).getDocLength());
                     toInsert.getQueryTermsInDocsAndQuery().put(current.getValue(), current);
                     toInsert.setContainsQueryTermInHeader(true);
+                    current.getDocsAndAmount().put(toInsert.getDocNO(),1);
                     docRelevantForTheQuery.put(toInsert.getDocNO(), toInsert);
-
                 }
             }
         }
-
-
     }
 
 
-    private void poll50MostRankedDocs() {
+    private void poll50MostRankedDocs() throws IOException {
 
         //poll the 50 most ranked docs from the qDocQueue
         int b = 0;
@@ -164,19 +166,25 @@ public class Searcher {
 
     }
 
-    private void sendToRanker() {
+    private void sendToRanker() throws IOException {
+
+        File f = new File("d:\\documents\\users\\hene\\Downloads\\treceval\\result.txt");
+        FileOutputStream fos = new FileOutputStream(f.getPath());
+        OutputStreamWriter osr = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osr);
 
         //iterate each relevant doc and send to Ranker
         Iterator it = docRelevantForTheQuery.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
+            String s = "351 0 "+((QueryDoc) pair.getValue()).docNO+" "+" 1 42.38 mt"+System.lineSeparator();
+            bw.write(s);
+            bw.flush();
             ranker.getQueryDocFromSearcher((QueryDoc) pair.getValue(), splitedQueryAfterParse.length);
             RankedQueryDocs.add((QueryDoc) pair.getValue());
             System.out.println(docRelevantForTheQuery.size());
             System.out.println(pair.getKey());
         }
-
-
     }
 
 
