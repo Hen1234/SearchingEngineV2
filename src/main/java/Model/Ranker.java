@@ -55,8 +55,9 @@ public class Ranker {
 
         double M = Searcher.numOfDocumentsInCorpus;
         double df = currentQueryTerm.getDf();
-        if (df==0)
-            df =2;
+        if (df==0) {
+            df = 2;
+        }
         if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ){
             return (cwq * cwd * Math.log10((M+1)/df)*0.5);
         }
@@ -71,12 +72,16 @@ public class Ranker {
 
 
 
-        double cwq = currentQueryTerm.getAppearanceInQuery()/* / queryLength*/;
+        double cwq = currentQueryTerm.getAppearanceInQuery() / queryLength;
         double d = currentQueryDoc.getLength();
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
-        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
+        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /d ; // normalization
+        if (currentQueryDoc.isContainsQueryTermInHeader()){
+            cwd = cwd +2;
+            df++;
+        }
 
         //k=2, B=0.75
 

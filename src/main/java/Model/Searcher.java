@@ -161,7 +161,7 @@ public class Searcher {
             bw.write(s);
             bw.flush();
             QueryResults.add(currentQueryDocFromQueue.docNO);
-            System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator());
+            System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator()+" after rankin");
             currentQueryDocFromQueue.setRank(0);
             b++;
         }
@@ -195,9 +195,9 @@ public class Searcher {
         Iterator it = docRelevantForTheQuery.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            String s = "351 0 "+((QueryDoc) pair.getValue()).docNO+" "+" 1 42.38 mt"+System.lineSeparator();
+            /*String s = "351 0 "+((QueryDoc) pair.getValue()).docNO+" "+" 1 42.38 mt"+System.lineSeparator();
             bw.write(s);
-            bw.flush();
+            bw.flush();*/
             ranker.getQueryDocFromSearcher((QueryDoc) pair.getValue(), splitedQueryAfterParse.length);
             RankedQueryDocs.add((QueryDoc) pair.getValue());
             System.out.println(docRelevantForTheQuery.size());
