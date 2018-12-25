@@ -72,12 +72,12 @@ public class Ranker {
 
 
 
-        double cwq = currentQueryTerm.getAppearanceInQuery() / queryLength;
+        double cwq = currentQueryTerm.getAppearanceInQuery()/* / queryLength*/;
         double d = currentQueryDoc.getLength();
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
-        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /d ; // normalization
+        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
         if (currentQueryDoc.isContainsQueryTermInHeader()){
             cwd = cwd +2;
             df++;
