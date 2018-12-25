@@ -116,7 +116,6 @@ public class Searcher {
     }
 
     private void addDocsRelevantFromHeaders(QueryTerm current) {
-        System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeeeeee");
         Stemmer stem = new Stemmer();
         HashSet<String> temp;
         if (!ReadFile.toStem)
@@ -351,7 +350,6 @@ public class Searcher {
 
                 if (splitedQueryAfterParse[i].equals(StringcurretTermOfQuery)) {
                     currentQueryTerm.setAppearanceInQuery(currentQueryTerm.getAppearanceInQuery() + 1);
-
                 }
 
 

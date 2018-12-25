@@ -175,7 +175,18 @@ public class ReadFile {
                     serial = element.select("DOCNO").text();
                     text = replaceFromMap(text, this.replacements);
                     Docs curerntDoc = new Docs(serial, city, element.select("DATE1").text());
-                    curerntDoc.setHeader(element.select("TI").text());
+                    /////////////////////checkk
+                    String header = element.select("TI").text();
+                    String headline = element.select("HEADLINE").text();
+                    if (headline!= null && header!=null){
+                        if (headline.length() >= header.length()){
+                            curerntDoc.setHeader(headline);
+                        }
+                        else{
+                            curerntDoc.setHeader(header);
+                        }
+                    }
+
                     String findTheCity = findCity(element.outerHtml());
                     for (int i = 0; i < findTheCity.length(); i++) {
                         if (Character.isDigit(findTheCity.charAt(i)) || findTheCity.length()<2 ||

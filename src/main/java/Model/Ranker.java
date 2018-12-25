@@ -36,8 +36,8 @@ public class Ranker {
             Map.Entry pair = (Map.Entry) it.next();
             QueryTerm currentQueryTerm = (QueryTerm) pair.getValue();
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
-            currentQueryDoc.setRank(currentQueryDoc.getRank() + /*BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength)*/
-            + tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength));
+            currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength))
+            /*+ tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength))*/;
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
         }
         //update the currentQueryDoc's rank by cosSim
@@ -49,8 +49,14 @@ public class Ranker {
         double cwq = currentQueryTerm.getAppearanceInQuery() /  queryLength;
         double d = currentQueryDoc.getLength();
         double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) / d ; // normalization
+        if (currentQueryDoc.isContainsQueryTermInHeader()){
+            cwd = cwd +2;
+        }
+
         double M = Searcher.numOfDocumentsInCorpus;
         double df = currentQueryTerm.getDf();
+        if (df==0)
+            df =2;
         if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ){
             return (cwq * cwd * Math.log10((M+1)/df)*0.5);
         }
