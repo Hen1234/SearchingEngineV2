@@ -144,9 +144,23 @@ public class Searcher {
     private void poll50MostRankedDocs() throws IOException {
 
         //poll the 50 most ranked docs from the qDocQueue
+        String folderName = ReadFile.postingPath;
+        if (ReadFile.toStem) {
+            folderName = folderName + "\\" + "WithStemming";
+        } else {
+            folderName = folderName + "\\" + "WithoutStemming";
+        }
+        File f = new File(folderName+"\\" + "result.txt");
+        FileOutputStream fos = new FileOutputStream(f.getPath());
+        OutputStreamWriter osr = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osr);
+
         int b = 0;
         while (!ranker.getqDocQueue().isEmpty() && b < 50) {
             QueryDoc currentQueryDocFromQueue = (QueryDoc) ranker.getqDocQueue().poll();
+            String s = "351 0 "+currentQueryDocFromQueue.docNO+" "+" 1 42.38 mt"+System.lineSeparator();
+            bw.write(s);
+            bw.flush();
             QueryResults.add(currentQueryDocFromQueue.docNO);
             System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator());
             currentQueryDocFromQueue.setRank(0);

@@ -36,24 +36,41 @@ public class Ranker {
             Map.Entry pair = (Map.Entry) it.next();
             QueryTerm currentQueryTerm = (QueryTerm) pair.getValue();
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
-            currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.75*BM25func(currentQueryTerm, currentQueryDoc));
+            currentQueryDoc.setRank(currentQueryDoc.getRank() + /*BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength)*/
+            + tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength));
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
         }
         //update the currentQueryDoc's rank by cosSim
-        currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
+        //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
         qDocQueue.add(currentQueryDoc);
     }
 
-    private double BM25func(QueryTerm currentQueryTerm, QueryDoc currentQueryDoc) {
+    private double tfIDF (QueryTerm currentQueryTerm, QueryDoc currentQueryDoc , double queryLength) {
+        double cwq = currentQueryTerm.getAppearanceInQuery() /  queryLength;
+        double d = currentQueryDoc.getLength();
+        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) / d ; // normalization
+        double M = Searcher.numOfDocumentsInCorpus;
+        double df = currentQueryTerm.getDf();
+        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ){
+            return (cwq * cwd * Math.log10((M+1)/df)*0.5);
+        }
+        if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym()){
+            return (cwq * cwd * Math.log10((M+1)/df)*5);
+        }
+        return (cwq * cwd * Math.log10((M+1)/df));
+
+    }
+
+    private double BM25func(QueryTerm currentQueryTerm, QueryDoc currentQueryDoc , double queryLength) {
 
 
 
-        int cwq = currentQueryTerm.getAppearanceInQuery();
-        int cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO());
-        int d = currentQueryDoc.getLength();
-        int df = currentQueryTerm.getDf();
+        double cwq = currentQueryTerm.getAppearanceInQuery()/* / queryLength*/;
+        double d = currentQueryDoc.getLength();
+        double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
-        int M = Searcher.numOfDocumentsInCorpus;
+        double M = Searcher.numOfDocumentsInCorpus;
+        double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
 
         //k=2, B=0.75
 
@@ -68,7 +85,7 @@ public class Ranker {
 
     }
 
-    private double cosSim(QueryDoc currentQueryDoc, int queryLength) {
+    /*private double cosSim(QueryDoc currentQueryDoc, int queryLength) {
 
         //iterator for the QueryTermsInTheQueryDoc
         Iterator it = currentQueryDoc.getQueryTermsInDocsAndQuery().entrySet().iterator();
@@ -119,6 +136,6 @@ public class Ranker {
         Mechane = Math.pow(firstSigmaMechane*secondSigmaMechane,(1/2));
         System.out.println("RankCosSim= "+Mone/Mechane);
         return (Mone/Mechane);
-    }
+    }*/
 
 }
