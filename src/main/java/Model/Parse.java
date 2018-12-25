@@ -1151,5 +1151,11 @@ public class Parse {
         }
     }
 
+    public static HashMap<String, HashSet<String>> getTermsInHeaderToDoc() {
+        return termsInHeaderToDoc;
+    }
 
+    public void setTermsInHeaderToDoc(HashMap<String, HashSet<String>> termsInHeaderToDoc) {
+        Parse.termsInHeaderToDoc = termsInHeaderToDoc;
+    }
 }

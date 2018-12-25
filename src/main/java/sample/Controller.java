@@ -313,6 +313,7 @@ public class Controller implements Initializable {
         }
 
         loadDocuments();
+        loadHeaders();
         reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
@@ -335,6 +336,21 @@ public class Controller implements Initializable {
         //searcher.setDocuments(Documents);
         reader.getIndexer().setDocsHashMap(Documents);
 
+    }
+
+    private void loadHeaders() throws IOException {
+        String postpath;
+        if (Stemming.isSelected()) {
+            postpath = pathFromUser + "\\WithStemming";
+        } else {
+            postpath = pathFromUser + "\\WithoutStemming";
+        }
+
+        byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"TermsInHeaderAsObject.txt"));
+        byte[] output = Base64.getMimeDecoder().decode(encode);
+        Object out = SerializationUtils.deserialize(output);
+        HashMap temp = ((HashMap<String,HashSet<String>>)out);
+        reader.getP().setTermsInHeaderToDoc(temp);
     }
 
     public void queriesPath(ActionEvent event) throws IOException {

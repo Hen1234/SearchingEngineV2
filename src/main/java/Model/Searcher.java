@@ -167,8 +167,13 @@ public class Searcher {
     }
 
     private void sendToRanker() throws IOException {
-
-        File f = new File("d:\\documents\\users\\hene\\Downloads\\treceval\\result.txt");
+        String folderName = ReadFile.postingPath;
+        if (ReadFile.toStem) {
+            folderName = folderName + "\\" + "WithStemming";
+        } else {
+            folderName = folderName + "\\" + "WithoutStemming";
+        }
+        File f = new File(folderName+"\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);
@@ -239,9 +244,6 @@ public class Searcher {
                     //find the doc
                     while (lineFromFile.charAt(k) != '#') {
                         docNo = docNo + lineFromFile.charAt(k);
-                        if (docNo.equals("FBIS3-947")) {
-                            System.out.println("debug");
-                        }
                         k++;
                     }
                     k++;

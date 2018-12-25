@@ -28,7 +28,7 @@ public class ReadFile {
     static int countDocs;
     private String corpusPath;
     private String stopWordsPath;
-    private String postingPath;
+    static String postingPath;
     static boolean toStem;
     private HashSet<String> languages;
     private HashMap<String,City> cities;
@@ -240,6 +240,7 @@ public class ReadFile {
         }
 
         writeDocumentsAsObject();
+        writeTermsInHeaderAsObject();
         //write the Documents as object
 //        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
 //        ObjectOutputStream oos1 = null;
@@ -273,6 +274,14 @@ public class ReadFile {
 
        // byte[] input = SerializationUtils
     }
+    private void writeTermsInHeaderAsObject() throws IOException {
+
+        byte[] input = SerializationUtils.serialize(Parse.getTermsInHeaderToDoc());
+        byte[] encode = Base64.getEncoder().encode(input);
+        FileUtils.writeByteArrayToFile(new File(postingPath + "\\" + "TermsInHeaderAsObject.txt"), encode);
+        // byte[] input = SerializationUtils
+    }
+
 
     /**
      * The method initialize the HashMap of the punctuation marks
@@ -456,6 +465,7 @@ public class ReadFile {
 
         return "";
     }
+
 
 
 }
