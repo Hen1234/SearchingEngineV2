@@ -82,7 +82,7 @@ public class Ranker {
         if (currentQueryDoc.docNO.equals("FBIS3-59016")){
             System.out.println("here");
         }
-        double cwq = currentQueryTerm.getAppearanceInQuery()/* / queryLength*/;
+        double cwq = currentQueryTerm.getAppearanceInQuery();
         double d = currentQueryDoc.getLength();
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
@@ -90,7 +90,7 @@ public class Ranker {
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
         if (currentQueryDoc.isContainsQueryTermInHeader()){
-            cwd = cwd +2;
+            cwd = cwd +1;
             df++;
         }
         /*if (Searcher.docRelevantForTheQuery.get(currentQueryDoc.docNO).containsQueryTermInHeader){
@@ -104,7 +104,7 @@ public class Ranker {
             return 0.5*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
 
         if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
-            return 2*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+            return 1.2*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
 
 
         return Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl))))));
