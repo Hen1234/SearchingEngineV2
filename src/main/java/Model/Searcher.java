@@ -18,7 +18,7 @@ public class Searcher {
 
     public TreeMap<String, String> Dictionary;
     public HashMap<String, Docs> Documents;
-    HashMap<String, QueryDoc> docRelevantForTheQuery;
+    static HashMap<String, QueryDoc> docRelevantForTheQuery;
     PriorityQueue<QueryDoc> RankedQueryDocs;
     private ArrayList<String> QueryResults;
     HashSet<String> citiesFromFilter; //hashSet for cities if the user chose filter by city

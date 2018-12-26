@@ -89,7 +89,11 @@ public class Ranker {
         double M = Searcher.numOfDocumentsInCorpus;
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
-        if (currentQueryDoc.isContainsQueryTermInHeader()){
+        /*if (currentQueryDoc.isContainsQueryTermInHeader()){
+            cwd = cwd +2;
+            df++;
+        }*/
+        if (Searcher.docRelevantForTheQuery.get(currentQueryDoc).containsQueryTermInHeader){
             cwd = cwd +2;
             df++;
         }
