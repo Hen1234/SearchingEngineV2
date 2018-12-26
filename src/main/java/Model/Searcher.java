@@ -127,6 +127,9 @@ public class Searcher {
             while (it.hasNext()) {
                 String docName = (String) it.next();
                 System.out.println("itratorDocsHeader: "+docName);
+                if (docName.equals("FBIS3-59016")){
+                    System.out.println("here");
+                }
                 if (!docRelevantForTheQuery.containsKey(docName)) {
                     QueryDoc toInsert = new QueryDoc(docName);
                     toInsert.setLength(Documents.get(docName).getDocLength());
@@ -134,6 +137,9 @@ public class Searcher {
                     toInsert.setContainsQueryTermInHeader(true);
                     current.getDocsAndAmount().put(toInsert.getDocNO(),1);
                     docRelevantForTheQuery.put(toInsert.getDocNO(), toInsert);
+                }
+                else{
+                    docRelevantForTheQuery.get(docName).setContainsQueryTermInHeader(true);
                 }
             }
         }
