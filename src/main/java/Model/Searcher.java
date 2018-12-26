@@ -318,27 +318,30 @@ public class Searcher {
 
 
                 }
-                if (lineFromFile.charAt(k) == 'D' && k + 5 < lineFromFile.length() &&
-                        lineFromFile.charAt(k + 1) == 'F' && lineFromFile.charAt(k + 2) == '-' &&
-                        lineFromFile.charAt(k + 3) == ' ') {
 
-                    String df = "";
-                    int q = 4;
-                    while (k + q < lineFromFile.length()) {
-                        if (lineFromFile.charAt(k + q) != ' ') {
-                            df = df + lineFromFile.charAt(k + q);
-                            break;
+                for (int j=0; j<lineFromFile.length(); j++) {
+                    if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
+                            lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
+                            lineFromFile.charAt(j + 3) == ' ') {
+                        String df = "";
+                        int q = 4;
+                        while (j + q < lineFromFile.length()) {
+                            if (lineFromFile.charAt(j + q) != ' ') {
+                                df = df + lineFromFile.charAt(j + q);
+                            }else{
+                                break;
+                            }
+                            q++;
+
                         }
-                        q++;
+
+                        try {
+                            Integer dfInt = Integer.parseInt(df);
+                            currentQueryTerm.setDf(dfInt);
+                        } catch (Exception e) {
+                        }
 
                     }
-
-                    try {
-                        Integer dfInt = Integer.parseInt(df);
-                        currentQueryTerm.setDf(dfInt);
-                    } catch (Exception e) {
-                    }
-
                 }
 
 

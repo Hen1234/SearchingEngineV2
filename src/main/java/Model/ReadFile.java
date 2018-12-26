@@ -19,6 +19,10 @@ public class ReadFile {
     private Docs doc;
     private HashMap<String, String> replacements;
 
+
+    ////////////////////
+    HashSet<String> debug;
+    //\\\\\\\\\\\\\\\
     File[] files;
     private ArrayList<String> words;
     static Parse p;
@@ -40,6 +44,8 @@ public class ReadFile {
      */
     public ReadFile() {
         p = new Parse();
+        debug = new HashSet<>();
+        initHashet();
         indexer = new Indexer();
         citiesIndexer = new CitiesIndexer();
         replacements = new HashMap<String, String>();
@@ -50,6 +56,55 @@ public class ReadFile {
         postingPath = "";
         languages = p.getLanguages();
         cities = p.getCities();
+    }
+
+    private void initHashet() {
+        debug.add("FBIS3-10551");
+        debug.add("FBIS3-10646");
+        debug.add("FBIS3-10697");
+        debug.add("FBIS3-11107");
+        debug.add("FBIS3-19947");
+        debug.add("FBIS3-33035");
+        debug.add("FBIS3-33505");
+        debug.add("FBIS3-50570");
+        debug.add("FBIS3-59016");
+        debug.add("FBIS4-10762");
+        debug.add("FBIS4-11114");
+        debug.add("FBIS4-34579");
+        debug.add("FBIS4-34996");
+        debug.add("FBIS4-35048");
+        debug.add("FBIS4-56243");
+        debug.add("FBIS4-56741");
+        debug.add("FBIS4-57354");
+        debug.add("FBIS4-64976");
+        debug.add("FBIS4-9937");
+        debug.add("FT921-2097");
+        debug.add("FT921-6272");
+        debug.add("FT921-6603");
+        debug.add("FT921-8458");
+        debug.add("FT922-14936");
+        debug.add("FT922-15099");
+        debug.add("FT922-3165");
+        debug.add("FT922-8324");
+        debug.add("FT923-11890");
+        debug.add("FT923-1456");
+        debug.add("FT924-1564");
+        debug.add("FT931-10913");
+        debug.add("FT931-16617");
+        debug.add("FT931-932");
+        debug.add("FT932-16710");
+        debug.add("FT932-6577");
+        debug.add("FT934-13429");
+        debug.add("FT934-13954");
+        debug.add("FT934-4629");
+        debug.add("FT934-4848");
+        debug.add("FT934-4856");
+        debug.add("FT941-13429");
+        debug.add("FT941-7250");
+        debug.add("FT941-9999");
+        debug.add("FT942-12805");
+        debug.add("FT943-14758");
+        debug.add("FT943-15117");
     }
 
     /**
@@ -176,6 +231,8 @@ public class ReadFile {
                     text = replaceFromMap(text, this.replacements);
                     Docs curerntDoc = new Docs(serial, city, element.select("DATE1").text());
                     /////////////////////checkk
+                    if (debug.contains(curerntDoc.getDocNo()))
+                        System.out.println("docNum: "+curerntDoc.getDocNo()+"  fileName: "+f.getName());
                     String header = element.select("TI").text();
                     String headline = element.select("HEADLINE").text();
                     if (headline!= null && header!=null){
