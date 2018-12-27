@@ -44,6 +44,8 @@ public class Ranker {
             Map.Entry pair = (Map.Entry) it.next();
             QueryTerm currentQueryTerm = (QueryTerm) pair.getValue();
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
+            /*double BM25Value = BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength);
+            double tfIDFValue = tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength);*/
             currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength))
             /*+ tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength))*/;
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
@@ -87,21 +89,30 @@ public class Ranker {
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
+        double k = 2;
+        double b = 0.75;
+
+        if (currentQueryTerm.isSynonym){
+            System.out.println(" ");
+        }
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
         if (currentQueryDoc.isContainsQueryTermInHeader()){
-            cwd = cwd +1;
+            cwd = cwd + 1;
             df++;
         }
-        /*if (Searcher.docRelevantForTheQuery.get(currentQueryDoc.docNO).containsQueryTermInHeader){
-            cwd = cwd +2;
-            df++;
-        }*/
 
-        //k=2, B=0.75
+        /*return (Math.log10((M + 1) / df) * cwq * (((b+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl)))))));*/
 
-        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() )
-            return 0.5*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ) {
+            System.out.println(" f");
+            return 0.5 * (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+        }
+
+        if(currentQueryTerm.isSynonym() && currentQueryDoc.isContainsQueryTermInHeader() ) {
+            System.out.println(" f");
+            return 0.6 * (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+        }
 
         if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
             return 1.2*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));

@@ -88,7 +88,7 @@ public class Searcher {
         numOfDocumentsInCorpus = Documents.size();
 
         queryAfterParse = ReadFile.p.parser(null, query, ReadFile.toStem, true, false);
-        int queryAfterParseLengthBeforeAddSynonym = queryAfterParse.length();
+        int queryAfterParseLengthBeforeAddSynonym = queryAfterParse.split(" ").length;
         if (isSemantic) getSemanticSynonym();
         splitedQueryAfterParse = queryAfterParse.split(" ");
 
