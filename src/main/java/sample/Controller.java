@@ -58,7 +58,7 @@ public class Controller implements Initializable {
     public CheckBox FilterByCity;
     public CheckBox isSemantic;
     public ComboBox Languages;
-    
+    public Alert badPathAlert;
     //public ComboBox Cities;
     public CheckComboBox Cities;
     public String FirstPath;
@@ -79,7 +79,7 @@ public class Controller implements Initializable {
         SecondPath = "";
         corpusPathIsNull = true;
         postingPathIsNull = true;
-
+        badPathAlert = new Alert(Alert.AlertType.ERROR,"Please insert Valid path",ButtonType.OK);
         searcher = new Searcher();
         Stemming.setSelected(false);
         reset.setDisable(true);
@@ -311,15 +311,28 @@ public class Controller implements Initializable {
             reader.getIndexer().setSorted(Dictionary);
             //searcher.setDictionary(Dictionary);
             o.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        }
+        catch (Exception e){
+            badPathAlert.show();
+            return;
         }
 
-        loadDocuments();
-        loadHeaders();
+        try {
+            loadDocuments();
+        }
+        catch (Exception e){
+            badPathAlert.show();
+            return;
+        }
+
+        try {
+            loadHeaders();
+        }
+        catch (Exception e){
+            badPathAlert.show();
+            return;
+        }
+
         reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
@@ -328,21 +341,18 @@ public class Controller implements Initializable {
     }
 
     private void loadDocuments() throws IOException {
-
         String postpath = pathFromUser;
         /*if (Stemming.isSelected()) {
             postpath = pathFromUser + "\\WithStemming";
         } else {
             postpath = pathFromUser + "\\WithoutStemming";
         }*/
-
-        byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"DocsAsObject.txt"));
-        byte[] output = Base64.getMimeDecoder().decode(encode);
-        Object out = SerializationUtils.deserialize(output);
-        Documents = ((HashMap<String, Docs>)out);
-        //searcher.setDocuments(Documents);
-        reader.getIndexer().setDocsHashMap(Documents);
-
+            byte[] encode = Files.readAllBytes(Paths.get(postpath + File.separator + "DocsAsObject.txt"));
+            byte[] output = Base64.getMimeDecoder().decode(encode);
+            Object out = SerializationUtils.deserialize(output);
+            Documents = ((HashMap<String, Docs>) out);
+            //searcher.setDocuments(Documents);
+            reader.getIndexer().setDocsHashMap(Documents);
     }
 
     private void loadHeaders() throws IOException {
@@ -370,8 +380,14 @@ public class Controller implements Initializable {
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
             System.out.println(txt_fiedQueries);
-            searcher.readQueriesFile(queriesFromUser.getPath());
-
+            try {
+                searcher.readQueriesFile(queriesFromUser.getPath());
+            }
+            catch (Exception e){
+                badPathAlert.setContentText("Please choose a valid path for queries file");
+                badPathAlert.show();
+                return;
+            }
         }
     }
 
@@ -380,8 +396,6 @@ public class Controller implements Initializable {
             //ObservableList<
             ObservableList<String> list = Cities.getCheckModel().getCheckedItems();
             citiesFromFilter(list);
-
-
         }/* else {
 
         }*/

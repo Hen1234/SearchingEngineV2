@@ -422,79 +422,74 @@ public class Searcher {
     }
 
 
-
-    public HashMap<String, String> readQueriesFile(String path) {
-        int k=0;
-        HashMap<String,String> ans = new HashMap<>();
+    public HashMap<String, String> readQueriesFile(String path) throws IOException {
+        int k = 0;
+        HashMap<String, String> ans = new HashMap<>();
         String queryNum = "";
         String query = "";
-        try {
-            FileInputStream f = new FileInputStream(new File(path+"\\queries.txt"));
-            InputStreamReader isr = new InputStreamReader(f);
-            BufferedReader br = new BufferedReader(isr);
-            //searcher.setDictionary(Dictionary);
-            String line = "";
-            while (line != null) {
+        FileInputStream f = new FileInputStream(new File(path + "\\queries.txt"));
+        InputStreamReader isr = new InputStreamReader(f);
+        BufferedReader br = new BufferedReader(isr);
+        //searcher.setDictionary(Dictionary);
+        String line = "";
+        while (line != null) {
+            line = br.readLine();
+            if (line == null)
+                return ans;
+            while (line.length() > 0 && line.charAt(0) != '<') {
                 line = br.readLine();
                 if (line == null)
                     return ans;
-                while (line.length() >0 && line.charAt(0) != '<') {
-                    line = br.readLine();
-                    if (line == null)
-                        return ans;
-                }
-                while (!(line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
-                        && line.charAt(4) == '>')){
-                    line = br.readLine();
-                    if (line == null)
-                        return ans;
-                }
-
-                if (line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
-                        && line.charAt(4) == '>') {
-                    k = line.length() - 1;
-                    while (line.charAt(k)==' ')
-                        k--;
-                    while (line.charAt(k) != ' ') {
-                        queryNum = line.charAt(k) + queryNum;
-                        k--;
-                    }
-                }
-                line = br.readLine();
-                while (line.length()==0 || line.charAt(0) != '<') {
-                    line = br.readLine();
-                    if (line == null)
-                        return ans;
-                }
-                k = 0;
-                if (line.length() > 6 && line.charAt(1) == 't' && line.charAt(2) == 'i' && line.charAt(3) == 't'
-                        && line.charAt(4) == 'l' && line.charAt(5) == 'e' && line.charAt(6) == '>') {
-                    k = 7;
-                    while (line.charAt(k)==' ')
-                        k++;
-                    while (k < line.length()) {
-                        query = query + line.charAt(k);
-                        k++;
-                    }
-                }
-                System.out.println("queryNum: "+queryNum);
-                System.out.println("query: "+query);
-                while(queryNum!=null && queryNum.length()>0 && queryNum.charAt(queryNum.length()-1)==' '){
-                    queryNum = queryNum.substring(0,queryNum.length()-1);
-                }
-                while(query!=null && query.length()>0 && query.charAt(query.length()-1)==' '){
-                    query = query.substring(0,query.length()-1);
-                }
-
-                System.out.println(" ");
-                ans.put(queryNum, query);
-                queryNum = "";
-                query = "";
             }
-        } catch(IOException e){
-            e.printStackTrace();
-        }
+            while (!(line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
+                    && line.charAt(4) == '>')) {
+                line = br.readLine();
+                if (line == null)
+                    return ans;
+            }
 
+            if (line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
+                    && line.charAt(4) == '>') {
+                k = line.length() - 1;
+                while (line.charAt(k) == ' ')
+                    k--;
+                while (line.charAt(k) != ' ') {
+                    queryNum = line.charAt(k) + queryNum;
+                    k--;
+                }
+            }
+            line = br.readLine();
+            while (line.length() == 0 || line.charAt(0) != '<') {
+                line = br.readLine();
+                if (line == null)
+                    return ans;
+            }
+            k = 0;
+            if (line.length() > 6 && line.charAt(1) == 't' && line.charAt(2) == 'i' && line.charAt(3) == 't'
+                    && line.charAt(4) == 'l' && line.charAt(5) == 'e' && line.charAt(6) == '>') {
+                k = 7;
+                while (line.charAt(k) == ' ')
+                    k++;
+                while (k < line.length()) {
+                    query = query + line.charAt(k);
+                    k++;
+                }
+            }
+            System.out.println("queryNum: " + queryNum);
+            System.out.println("query: " + query);
+            while (queryNum != null && queryNum.length() > 0 && queryNum.charAt(queryNum.length() - 1) == ' ') {
+                queryNum = queryNum.substring(0, queryNum.length() - 1);
+            }
+            while (query != null && query.length() > 0 && query.charAt(query.length() - 1) == ' ') {
+                query = query.substring(0, query.length() - 1);
+            }
+
+            System.out.println(" ");
+            ans.put(queryNum, query);
+            queryNum = "";
+            query = "";
+
+        }
         return ans;
     }
 }
