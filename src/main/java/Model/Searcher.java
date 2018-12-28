@@ -126,8 +126,8 @@ public class Searcher {
             Iterator it = temp.iterator();
             while (it.hasNext()) {
                 String docName = (String) it.next();
-                System.out.println("itratorDocsHeader: "+docName);
-                if (docName.equals("FBIS3-59016")){
+                System.out.println("itratorDocsHeader: " + docName);
+                if (docName.equals("FBIS3-59016")) {
                     System.out.println("here");
                 }
                 if (!docRelevantForTheQuery.containsKey(docName)) {
@@ -135,10 +135,9 @@ public class Searcher {
                     toInsert.setLength(Documents.get(docName).getDocLength());
                     toInsert.getQueryTermsInDocsAndQuery().put(current.getValue(), current);
                     toInsert.setContainsQueryTermInHeader(true);
-                    current.getDocsAndAmount().put(toInsert.getDocNO(),1);
+                    current.getDocsAndAmount().put(toInsert.getDocNO(), 1);
                     docRelevantForTheQuery.put(toInsert.getDocNO(), toInsert);
-                }
-                else{
+                } else {
                     docRelevantForTheQuery.get(docName).setContainsQueryTermInHeader(true);
                 }
             }
@@ -155,7 +154,7 @@ public class Searcher {
         } else {
             folderName = folderName + "\\" + "WithoutStemming";
         }
-        File f = new File(folderName+"\\" + "result.txt");
+        File f = new File(folderName + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);
@@ -163,11 +162,11 @@ public class Searcher {
         int b = 0;
         while (!ranker.getqDocQueue().isEmpty() && b < 50) {
             QueryDoc currentQueryDocFromQueue = (QueryDoc) ranker.getqDocQueue().poll();
-            String s = "351 0 "+currentQueryDocFromQueue.docNO+" "+" 1 42.38 mt"+System.lineSeparator();
+            String s = "351 0 " + currentQueryDocFromQueue.docNO + " " + " 1 42.38 mt" + System.lineSeparator();
             bw.write(s);
             bw.flush();
             QueryResults.add(currentQueryDocFromQueue.docNO);
-            System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator()+" after rankin");
+            System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator() + " after rankin");
             currentQueryDocFromQueue.setRank(0);
             b++;
         }
@@ -192,7 +191,7 @@ public class Searcher {
         } else {
             folderName = folderName + "\\" + "WithoutStemming";
         }
-        File f = new File(folderName+"\\" + "result.txt");
+        File f = new File(folderName + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);
@@ -296,11 +295,7 @@ public class Searcher {
 
                                     if (!docRelevantForTheQuery.containsKey(newQueryDoc.getDocNO()))
                                         docRelevantForTheQuery.put(newQueryDoc.getDocNO(), newQueryDoc);
-
-
                                 }
-
-
                             }
 
                             //there is no filter by city
@@ -321,11 +316,9 @@ public class Searcher {
 
                         }
                     }
-
-
                 }
 
-                for (int j=0; j<lineFromFile.length(); j++) {
+                for (int j = 0; j < lineFromFile.length(); j++) {
                     if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
                             lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
                             lineFromFile.charAt(j + 3) == ' ') {
@@ -334,7 +327,7 @@ public class Searcher {
                         while (j + q < lineFromFile.length()) {
                             if (lineFromFile.charAt(j + q) != ' ') {
                                 df = df + lineFromFile.charAt(j + q);
-                            }else{
+                            } else {
                                 break;
                             }
                             q++;
@@ -349,10 +342,7 @@ public class Searcher {
 
                     }
                 }
-
-
             }
-
 
             //update the amount of appearence in the query
             for (int i = 0; i < splitedQueryAfterParse.length; i++) {
@@ -360,10 +350,7 @@ public class Searcher {
                 if (splitedQueryAfterParse[i].equals(StringcurretTermOfQuery)) {
                     currentQueryTerm.setAppearanceInQuery(currentQueryTerm.getAppearanceInQuery() + 1);
                 }
-
-
             }
-
         }
 
         return currentQueryTerm;
@@ -435,4 +422,79 @@ public class Searcher {
     }
 
 
+
+    public HashMap<String, String> readQueriesFile(String path) {
+        int k=0;
+        HashMap<String,String> ans = new HashMap<>();
+        String queryNum = "";
+        String query = "";
+        try {
+            FileInputStream f = new FileInputStream(new File(path));
+            InputStreamReader isr = new InputStreamReader(f);
+            BufferedReader br = new BufferedReader(isr);
+            //searcher.setDictionary(Dictionary);
+            String line = "";
+            while (line != null) {
+                line = br.readLine();
+                if (line == null)
+                    return ans;
+                while (line.length() >0 && line.charAt(0) != '<') {
+                    line = br.readLine();
+                    if (line == null)
+                        return ans;
+                }
+                while (!(line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
+                        && line.charAt(4) == '>')){
+                    line = br.readLine();
+                    if (line == null)
+                        return ans;
+                }
+
+                if (line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
+                        && line.charAt(4) == '>') {
+                    k = line.length() - 1;
+                    while (line.charAt(k)==' ')
+                        k--;
+                    while (line.charAt(k) != ' ') {
+                        queryNum = line.charAt(k) + queryNum;
+                        k--;
+                    }
+                }
+                line = br.readLine();
+                while (line.length()==0 || line.charAt(0) != '<') {
+                    line = br.readLine();
+                    if (line == null)
+                        return ans;
+                }
+                k = 0;
+                if (line.length() > 6 && line.charAt(1) == 't' && line.charAt(2) == 'i' && line.charAt(3) == 't'
+                        && line.charAt(4) == 'l' && line.charAt(5) == 'e' && line.charAt(6) == '>') {
+                    k = 7;
+                    while (line.charAt(k)==' ')
+                        k++;
+                    while (k < line.length()) {
+                        query = query + line.charAt(k);
+                        k++;
+                    }
+                }
+                System.out.println("queryNum: "+queryNum);
+                System.out.println("query: "+query);
+                while(queryNum!=null && queryNum.length()>0 && queryNum.charAt(queryNum.length()-1)==' '){
+                    queryNum = queryNum.substring(0,queryNum.length()-1);
+                }
+                while(query!=null && query.length()>0 && query.charAt(query.length()-1)==' '){
+                    query = query.substring(0,query.length()-1);
+                }
+
+                System.out.println(" ");
+                ans.put(queryNum, query);
+                queryNum = "";
+                query = "";
+            }
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        return ans;
+    }
 }

@@ -290,12 +290,7 @@ public class Controller implements Initializable {
      */
     public void loadDictionary() throws IOException, ClassNotFoundException {
 
-        String postpath;
-        if (Stemming.isSelected()) {
-            postpath = pathFromUser + "\\WithStemming";
-        } else {
-            postpath = pathFromUser + "\\WithoutStemming";
-        }
+        String postpath = pathFromUser;
         //String postpath = reader.getPostingPath();
         FileInputStream f = null;
         try {
@@ -317,17 +312,18 @@ public class Controller implements Initializable {
         reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
+        LoadQueryFile.setDisable(false);
 
     }
 
     private void loadDocuments() throws IOException {
 
-        String postpath;
-        if (Stemming.isSelected()) {
+        String postpath = pathFromUser;
+        /*if (Stemming.isSelected()) {
             postpath = pathFromUser + "\\WithStemming";
         } else {
             postpath = pathFromUser + "\\WithoutStemming";
-        }
+        }*/
 
         byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"DocsAsObject.txt"));
         byte[] output = Base64.getMimeDecoder().decode(encode);
@@ -339,12 +335,12 @@ public class Controller implements Initializable {
     }
 
     private void loadHeaders() throws IOException {
-        String postpath;
-        if (Stemming.isSelected()) {
+        String postpath = pathFromUser;
+        /*if (Stemming.isSelected()) {
             postpath = pathFromUser + "\\WithStemming";
         } else {
             postpath = pathFromUser + "\\WithoutStemming";
-        }
+        }*/
 
         byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"TermsInHeaderAsObject.txt"));
         byte[] output = Base64.getMimeDecoder().decode(encode);
@@ -362,8 +358,11 @@ public class Controller implements Initializable {
             //pathFromUser = corpusFromUser.getPath();
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
+            searcher.readQueriesFile(queriesFromUser.getPath());
 
         }
+
+
     }
 
     public void FilterByCity(ActionEvent event) {
