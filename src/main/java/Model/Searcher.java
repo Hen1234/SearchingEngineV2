@@ -500,18 +500,29 @@ public class Searcher {
         codesAndQueries = ans;
 
         Iterator it = codesAndQueries.entrySet().iterator();
-        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
-        FileOutputStream fos = new FileOutputStream(res.getPath());
-        OutputStreamWriter osr = new OutputStreamWriter(fos);
-        BufferedWriter bw = new BufferedWriter(osr);
-        StringBuilder s = new StringBuilder("");
+        TreeMap<String, ArrayList<String>> forWriting = new TreeMap<>();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             String key = (String) pair.getKey();
             String queryString = (String) pair.getValue();
             ArrayList<String> temp = pasreQuery(queryString);
-            for (int i = 0; i <temp.size() ; i++) {
-                s.append(key+" 0 " + temp.get(i) + " " + " 1 42.38 mt" + System.lineSeparator());
+            forWriting.put(key,temp);
+            QueryResults = new ArrayList<>();
+            }
+
+        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
+        FileOutputStream fos = new FileOutputStream(res.getPath());
+        OutputStreamWriter osr = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osr);
+        StringBuilder s = new StringBuilder("");
+        Iterator iter = forWriting.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry pair = (Map.Entry) iter.next();
+            String key = (String) pair.getKey();
+            ArrayList<String> queryString = (ArrayList<String>) pair.getValue();
+            //ArrayList<String> temp = pasreQuery(queryString);
+            for (int i = 0; i <queryString.size() ; i++) {
+                s.append(key+" 0 " + queryString.get(i) + " " + " 1 42.38 mt" + System.lineSeparator());
                 /*bw.write(s);
                 bw.flush();*/
             }

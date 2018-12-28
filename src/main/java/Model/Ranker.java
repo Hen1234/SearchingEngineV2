@@ -46,7 +46,7 @@ public class Ranker {
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
             /*double BM25Value = BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength);
             double tfIDFValue = tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength);*/
-            currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength))
+            currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength)/* + ((tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength)))*/);
             /*+ tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength))*/;
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
         }
@@ -66,14 +66,14 @@ public class Ranker {
         double M = Searcher.numOfDocumentsInCorpus;
         double df = currentQueryTerm.getDf();
         if (df==0) {
-            df = 2;
+            df = 1.5;
         }
-        if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ){
+        /*if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ){
             return (cwq * cwd * Math.log10((M+1)/df)*0.5);
         }
         if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym()){
             return (cwq * cwd * Math.log10((M+1)/df)*5);
-        }
+        }*/
         return (cwq * cwd * Math.log10((M+1)/df));
 
     }
@@ -95,11 +95,11 @@ public class Ranker {
         if (currentQueryTerm.isSynonym){
             System.out.println(" ");
         }
-        //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /*/d*/ ; // normalization
+        //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /d ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
         if (currentQueryDoc.isContainsQueryTermInHeader()){
-            cwd = cwd + 1;
-            df++;
+            cwd = cwd + 5; // 5 or 4
+            //df++;
         }
 
         /*return (Math.log10((M + 1) / df) * cwq * (((b+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl)))))));*/
@@ -115,7 +115,7 @@ public class Ranker {
         }
 
         if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
-            return 1.2*(Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+            return (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
 
 
         return Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl))))));
