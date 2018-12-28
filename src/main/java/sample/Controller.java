@@ -132,6 +132,7 @@ public class Controller implements Initializable {
             Languages.setDisable(false);
             reset.setDisable(false);
             ShowDictionary.setDisable(false);
+
             LoadDictionary.setDisable(false);
 
             HashMap<String, City> cities = reader.getCities();
@@ -406,6 +407,8 @@ public class Controller implements Initializable {
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
             System.out.println(txt_fiedQueries);
+            if (txt_fiedQueries.getText()!=null)
+                RunQueryFile.setDisable(false);
         }
     }
 

@@ -149,11 +149,11 @@ public class Searcher {
 
         //poll the 50 most ranked docs from the qDocQueue
         String folderName = ReadFile.postingPath;
-        if (ReadFile.toStem) {
+        /*if (ReadFile.toStem) {
             folderName = folderName + "\\" + "WithStemming";
         } else {
             folderName = folderName + "\\" + "WithoutStemming";
-        }
+        }*/
         File f = new File(folderName + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
@@ -186,11 +186,11 @@ public class Searcher {
 
     private void sendToRanker() throws IOException {
         String folderName = ReadFile.postingPath;
-        if (ReadFile.toStem) {
+        /*if (ReadFile.toStem) {
             folderName = folderName + "\\" + "WithStemming";
         } else {
             folderName = folderName + "\\" + "WithoutStemming";
-        }
+        }*/
         File f = new File(folderName + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
@@ -351,6 +351,8 @@ public class Searcher {
                     currentQueryTerm.setAppearanceInQuery(currentQueryTerm.getAppearanceInQuery() + 1);
                 }
             }
+        }else{ // query term not in dictionary (null)
+            return new QueryTerm(StringcurretTermOfQuery);
         }
 
         return currentQueryTerm;
