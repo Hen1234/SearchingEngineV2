@@ -86,6 +86,10 @@ public class Docs implements Serializable {
         this.language = language;
     }
 
+    public void setMostFiveFrequencyEssences(PriorityQueue<TermsPerDoc> mostFiveFrequencyEssences) {
+        this.mostFiveFrequencyEssences = mostFiveFrequencyEssences;
+    }
+
     //getter
     public PriorityQueue<TermsPerDoc> getMostFiveFrequencyEssences() {
         return mostFiveFrequencyEssences;

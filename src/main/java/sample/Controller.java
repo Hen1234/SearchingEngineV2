@@ -59,10 +59,13 @@ public class Controller implements Initializable {
     public CheckBox Stemming;
     public CheckBox FilterByCity;
     public CheckBox isSemantic;
+    public CheckBox ShowEntities;
     public ComboBox Languages;
+    public ChoiceBox RelevantDocs;
     public Alert badPathAlert;
     //public ComboBox Cities;
     public CheckComboBox Cities;
+    public Label labelEntities;
     public String FirstPath;
     public String SecondPath;
     public String quertPathFromUser;
@@ -81,7 +84,7 @@ public class Controller implements Initializable {
         SecondPath = "";
         corpusPathIsNull = true;
         postingPathIsNull = true;
-        badPathAlert = new Alert(Alert.AlertType.ERROR,"Please insert Valid path",ButtonType.OK);
+        badPathAlert = new Alert(Alert.AlertType.ERROR, "Please insert Valid path", ButtonType.OK);
         searcher = new Searcher();
         Stemming.setSelected(false);
         reset.setDisable(true);
@@ -314,32 +317,29 @@ public class Controller implements Initializable {
             reader.getIndexer().setSorted(Dictionary);
             //searcher.setDictionary(Dictionary);
             o.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             badPathAlert.show();
             return;
         }
 
         try {
             loadDocuments();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
             badPathAlert.show();
             return;
         }
 
         try {
             loadHeaders();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             badPathAlert.show();
             return;
         }
 
         try {
             loadDicToShow();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             badPathAlert.show();
             return;
         }
@@ -373,12 +373,12 @@ public class Controller implements Initializable {
         } else {
             postpath = pathFromUser + "\\WithoutStemming";
         }*/
-            byte[] encode = Files.readAllBytes(Paths.get(postpath + File.separator + "DocsAsObject.txt"));
-            byte[] output = Base64.getMimeDecoder().decode(encode);
-            Object out = SerializationUtils.deserialize(output);
-            Documents = ((HashMap<String, Docs>) out);
-            //searcher.setDocuments(Documents);
-            reader.getIndexer().setDocsHashMap(Documents);
+        byte[] encode = Files.readAllBytes(Paths.get(postpath + File.separator + "DocsAsObject.txt"));
+        byte[] output = Base64.getMimeDecoder().decode(encode);
+        Object out = SerializationUtils.deserialize(output);
+        Documents = ((HashMap<String, Docs>) out);
+        //searcher.setDocuments(Documents);
+        reader.getIndexer().setDocsHashMap(Documents);
     }
 
     private void loadHeaders() throws IOException {
@@ -389,10 +389,10 @@ public class Controller implements Initializable {
             postpath = pathFromUser + "\\WithoutStemming";
         }*/
 
-        byte[] encode= Files.readAllBytes(Paths.get(postpath+File.separator+"TermsInHeaderAsObject.txt"));
+        byte[] encode = Files.readAllBytes(Paths.get(postpath + File.separator + "TermsInHeaderAsObject.txt"));
         byte[] output = Base64.getMimeDecoder().decode(encode);
         Object out = SerializationUtils.deserialize(output);
-        HashMap temp = ((HashMap<String,HashSet<String>>)out);
+        HashMap temp = ((HashMap<String, HashSet<String>>) out);
         reader.getP().setTermsInHeaderToDoc(temp);
     }
 
@@ -406,7 +406,7 @@ public class Controller implements Initializable {
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
             System.out.println(txt_fiedQueries);
-            if (txt_fiedQueries.getText()!=null)
+            if (txt_fiedQueries.getText() != null)
                 RunQueryFile.setDisable(false);
         }
     }
@@ -417,8 +417,7 @@ public class Controller implements Initializable {
             System.out.println(txt_fiedQueries);
             try {
                 searcher.readQueriesFile(queriesFromUser);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 badPathAlert.setContentText("Please choose a valid path for queries file");
                 badPathAlert.show();
                 badPathAlert.setContentText("Please insert Valid path");
@@ -450,20 +449,19 @@ public class Controller implements Initializable {
     private void citiesFromFilter(ObservableList<String> list) {
 
         HashSet<String> citiesHashSet = new HashSet<>();
-        for(String key: list){
+        for (String key : list) {
             citiesHashSet.add(key);
         }
 
         searcher.setCities(citiesHashSet);
     }
 
-    public void getQueryFromUser () throws IOException {
+    public void getQueryFromUser() throws IOException {
 
         String query = txt_fiedInsertQuery.getText();
         try {
             searcher.pasreQuery(query);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             badPathAlert.setContentText("Please insert query for search");
             badPathAlert.show();
             badPathAlert.setContentText("Please insert Valid path");
@@ -473,14 +471,26 @@ public class Controller implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Results");
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ShowQueryResults.fxml"));
-        Scene scene = new Scene(root, 700, 500);
+        Scene scene = new Scene(root, 500, 400);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.show();
 
+        //init the docs for show entities
+        ArrayList<String> QueryResultsList = searcher.getQueryResults();
+        ObservableList<String> QueryResultsListObser = FXCollections.observableArrayList();
+
+        for (String key : QueryResultsList) {
+            QueryResultsListObser.add(key);
+        }
+
+        RelevantDocs.setItems(QueryResultsListObser);
+        searcher.setQueryResults(new ArrayList<String>());
+
+
     }
 
-    public void isSemantic(){
+    public void isSemantic() {
 
         if (isSemantic.isSelected()) {
 
@@ -488,5 +498,32 @@ public class Controller implements Initializable {
         }
 
     }
+
+    public void showEntities() {
+
+
+        String docChoiced = (String) RelevantDocs.getValue();
+        if (docChoiced != null) {
+            Docs choicesDoc = (Docs) Documents.get(docChoiced);
+            PriorityQueue<TermsPerDoc> newDocQueue = new PriorityQueue<>();
+            String entities =  "";
+            for (int i = 0; i < choicesDoc.getMostFiveFrequencyEssences().size(); i++) {
+                TermsPerDoc current = choicesDoc.getMostFiveFrequencyEssences().poll();
+                entities = entities+ current.getValue() + "\n";
+                newDocQueue.add(current);
+
+            }
+            labelEntities.setText(entities);
+
+
+
+
+
+        }
+
+
+
+    }
+
 
 }

@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * The class responsible for reading the corpus, separating the documents and send them to the Parse and the Indexer
  */
-public class ReadFile {
+public class ReadFile implements Serializable {
 
 
     private Docs doc;
@@ -441,10 +441,14 @@ public class ReadFile {
             Docs nextDoc = (Docs) pair.getValue();
             PriorityQueue<TermsPerDoc> docQueue = nextDoc.getMostFiveFrequencyEssences();
             StringBuilder FiveMostFreqEssences = new StringBuilder("");
+
+            PriorityQueue<TermsPerDoc> newDocQueue = new PriorityQueue<>();
             while(!docQueue.isEmpty()){
                 TermsPerDoc current = docQueue.poll();
+                newDocQueue.add(current);
                 FiveMostFreqEssences.append(current.getValue()+"-"+current.getTf()+", ");
             }
+
 
             if ((nextDoc.getCity() == null || nextDoc.getCity().equals("")) && (nextDoc.getDate() != null || nextDoc.getDate().equals(""))) {
                 text.append(nextDoc.getDocNo() + ": DocLength="+nextDoc.getDocLength() + " maxtf=" + nextDoc.getMaxft() + ", uniqueWords=" +
@@ -496,7 +500,9 @@ public class ReadFile {
                 text = new StringBuilder("");
                 continue;
             }
+            nextDoc.setMostFiveFrequencyEssences(newDocQueue);
         }
+
         w.close();
     }
 
