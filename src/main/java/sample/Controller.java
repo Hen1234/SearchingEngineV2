@@ -116,15 +116,16 @@ public class Controller implements Initializable {
         } else {
             final long startTime = System.nanoTime();
             try {
+                reader.setPostingPath(txt_fiedPosting.getText());
                 reader.ReadJsoup();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (FirstPath.equals(""))
-                FirstPath = reader.getPostingPath();
+            /*if (FirstPath.equals(""))
+                FirstPath = txt_fiedPosting.getText();
             else {
-                SecondPath = reader.getPostingPath();
-            }
+                SecondPath = txt_fiedPosting.getText();
+            }*/
             HashSet<String> languages = reader.getLanguages();
             Iterator it = languages.iterator();
 
@@ -213,10 +214,9 @@ public class Controller implements Initializable {
      * The method is called while the user enters the path of the posting files
      * it sets the given path to the field of the ReadFile object.
      *
-     * @param event
      * @throws IOException
      */
-    public void postingPath(ActionEvent event) throws IOException {
+    public void postingPath() throws IOException {
         Stage stage = new Stage();
         DirectoryChooser dir = new DirectoryChooser();
         File postingPathFromUser = dir.showDialog(stage);
@@ -230,7 +230,6 @@ public class Controller implements Initializable {
                 Run.setDisable(false);
             }
         }
-
     }
 
     /**
