@@ -15,7 +15,7 @@
       <Button fx:id="ShowDictionary" layoutX="25.0" layoutY="188.0" mnemonicParsing="false" onAction="#showDictionary" text="Show Dictionary" />
       <Button fx:id="LoadDictionary" layoutX="143.0" layoutY="188.0" mnemonicParsing="false" onAction="#loadDictionary" text="Load Dictionary" />
       <Button fx:id="LoadCorpus" layoutX="25.0" layoutY="22.0" mnemonicParsing="false" onAction="#corpusPath" prefHeight="25.0" prefWidth="127.0" text="Load Corpus" />
-      <Button fx:id="SavePosting" layoutX="25.0" layoutY="70.0" mnemonicParsing="false" onAction="#postingPath" prefHeight="25.0" prefWidth="127.0" text="Save Posting" />
+      <Button fx:id="SavePosting" layoutX="25.0" layoutY="70.0" mnemonicParsing="false" onAction="#postingPath" prefHeight="25.0" prefWidth="127.0" text="Postings Path" />
       <TextField fx:id="txt_fiedPosting" layoutX="172.0" layoutY="70.0" />
       <TextField fx:id="txt_fiedCorpus" layoutX="172.0" layoutY="22.0" onAction="#corpusPath" />
       <CheckBox fx:id="Stemming" layoutX="353.0" layoutY="51.0" mnemonicParsing="false" onAction="#stemming" text="Stemming" />
