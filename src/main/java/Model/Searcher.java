@@ -16,6 +16,7 @@ public class Searcher {
     String queryAfterParse;
     boolean isSemantic;
 
+    HashMap<String, String> codesAndQueries;
     public TreeMap<String, String> Dictionary;
     public HashMap<String, Docs> Documents;
     static HashMap<String, QueryDoc> docRelevantForTheQuery;
@@ -492,6 +493,7 @@ public class Searcher {
             query = "";
 
         }
-        return ans;
+        codesAndQueries = ans;
+        return codesAndQueries;
     }
 }
