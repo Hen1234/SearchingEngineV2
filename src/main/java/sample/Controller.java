@@ -38,6 +38,7 @@ public class Controller implements Initializable {
     static Searcher searcher;
     public TreeMap<String, String> Dictionary;
     public HashMap<String, Docs> Documents;
+    public ArrayList<String> DicToShow;
     //public Stage stage;
     @FXML
     public boolean corpusPathIsNull;
@@ -50,6 +51,7 @@ public class Controller implements Initializable {
     public Button LoadDictionary;
     public Button LoadQueryFile;
     public Button RunQuery;
+    public Button RunQueryFile;
     public TextField txt_fiedCorpus;
     public TextField txt_fiedPosting;
     public TextField txt_fiedQueries;
@@ -87,6 +89,7 @@ public class Controller implements Initializable {
         quertPathFromUser = "";
         FilterByCity.setSelected(false);
         RunQuery.setDisable(true);
+        RunQueryFile.setDisable(true);
         LoadQueryFile.setDisable(true);
         LoadDictionary.setDisable(true);
         Run.setDisable(true);
@@ -275,9 +278,9 @@ public class Controller implements Initializable {
     public void showDictionary(ActionEvent event) {
 
         try {
-            if (reader.getIndexer().getSorted() == null || reader.getIndexer().getSorted().size() == 0) {
+            /*if (reader.getIndexer().getSorted() == null || reader.getIndexer().getSorted().size() == 0) {
                 loadDictionary();
-            }
+            }*/
             Stage stage = new Stage();
             stage.setTitle("Dictionary");
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ShowDic.fxml"));
@@ -333,10 +336,33 @@ public class Controller implements Initializable {
             return;
         }
 
+        try {
+            loadDicToShow();
+        }
+        catch (Exception e){
+            badPathAlert.show();
+            return;
+        }
+
         reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
+        RunQueryFile.setDisable(false);
         LoadQueryFile.setDisable(false);
+
+    }
+
+    public void loadDicToShow() throws IOException, ClassNotFoundException {
+
+        String postpath = pathFromUser;
+        //String postpath = reader.getPostingPath();
+        FileInputStream f = null;
+        f = new FileInputStream(new File(postpath + "\\" + "DicToShowAsObject.txt"));
+        ObjectInputStream o = new ObjectInputStream(f);
+        DicToShow = (ArrayList<String>) o.readObject();
+        reader.getIndexer().setDicToShow(DicToShow);
+        //searcher.setDictionary(Dictionary);
+        o.close();
 
     }
 
@@ -380,12 +406,20 @@ public class Controller implements Initializable {
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
             System.out.println(txt_fiedQueries);
+        }
+    }
+
+    public void runQueriesPath(ActionEvent event) throws IOException {
+        String queriesFromUser = txt_fiedQueries.getText();
+        if (queriesFromUser != null) {
+            System.out.println(txt_fiedQueries);
             try {
-                searcher.readQueriesFile(queriesFromUser.getPath());
+                searcher.readQueriesFile(queriesFromUser);
             }
             catch (Exception e){
                 badPathAlert.setContentText("Please choose a valid path for queries file");
                 badPathAlert.show();
+                badPathAlert.setContentText("Please insert Valid path");
                 return;
             }
         }
@@ -424,8 +458,15 @@ public class Controller implements Initializable {
     public void getQueryFromUser () throws IOException {
 
         String query = txt_fiedInsertQuery.getText();
-        searcher.pasreQuery(query);
-
+        try {
+            searcher.pasreQuery(query);
+        }
+        catch (Exception e){
+            badPathAlert.setContentText("Please insert query for search");
+            badPathAlert.show();
+            badPathAlert.setContentText("Please insert Valid path");
+            return;
+        }
         //new stage for the list of the ranked doc
         Stage stage = new Stage();
         stage.setTitle("Results");

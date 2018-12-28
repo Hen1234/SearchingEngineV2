@@ -980,6 +980,7 @@ public class Indexer {
 
 
             }
+
         }
     }
 
@@ -997,5 +998,9 @@ public class Indexer {
                 currentQueue.add(new TermsPerDoc(tf, termVlue));
             }
         }
+    }
+
+    public void setDicToShow(ArrayList<String> dicToShow) {
+        DicToShow = dicToShow;
     }
 }

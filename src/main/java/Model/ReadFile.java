@@ -309,6 +309,7 @@ public class ReadFile {
 
         writeDocumentsAsObject();
         writeTermsInHeaderAsObject();
+        writeDicToShowAsObject();
         //write the Documents as object
 //        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
 //        ObjectOutputStream oos1 = null;
@@ -348,6 +349,21 @@ public class ReadFile {
         byte[] encode = Base64.getEncoder().encode(input);
         FileUtils.writeByteArrayToFile(new File(postingPath + "\\" + "TermsInHeaderAsObject.txt"), encode);
         // byte[] input = SerializationUtils
+    }
+
+    private void writeDicToShowAsObject() throws IOException {
+        //write the Dictionary as object
+        File toWriteSortedAsObject = new File(postingPath + "\\" + "DicToShowAsObject.txt");
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(toWriteSortedAsObject));
+        } catch (IOException e) {
+        }
+        try {
+            oos.writeObject(indexer.getDicToShow());
+            oos.close();
+        } catch (Exception e) {
+        }
     }
 
 
