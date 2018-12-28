@@ -78,7 +78,7 @@ public class Searcher {
         QueryResults = queryResults;
     }
 
-    public void pasreQuery(String query) throws IOException {
+    public ArrayList<String> pasreQuery(String query) throws IOException {
 
         //init the Documents and Dictionary HashMap from the index
         Documents = Indexer.docsHashMap;
@@ -112,7 +112,8 @@ public class Searcher {
 
 
         sendToRanker();
-        poll50MostRankedDocs();
+
+        return poll50MostRankedDocs();
 
     }
 
@@ -146,7 +147,7 @@ public class Searcher {
     }
 
 
-    private void poll50MostRankedDocs() throws IOException {
+    private ArrayList<String> poll50MostRankedDocs() throws IOException {
 
         //poll the 50 most ranked docs from the qDocQueue
         String folderName = ReadFile.postingPath;
@@ -155,17 +156,17 @@ public class Searcher {
         } else {
             folderName = folderName + "\\" + "WithoutStemming";
         }*/
-        File f = new File(folderName + "\\" + "result.txt");
+       /* File f = new File(folderName + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(f.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
-        BufferedWriter bw = new BufferedWriter(osr);
+        BufferedWriter bw = new BufferedWriter(osr);*/
 
         int b = 0;
         while (!ranker.getqDocQueue().isEmpty() && b < 50) {
             QueryDoc currentQueryDocFromQueue = (QueryDoc) ranker.getqDocQueue().poll();
-            String s = "351 0 " + currentQueryDocFromQueue.docNO + " " + " 1 42.38 mt" + System.lineSeparator();
+            /*String s = "351 0 " + currentQueryDocFromQueue.docNO + " " + " 1 42.38 mt" + System.lineSeparator();
             bw.write(s);
-            bw.flush();
+            bw.flush();*/
             QueryResults.add(currentQueryDocFromQueue.docNO);
             System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator() + " after rankin");
             currentQueryDocFromQueue.setRank(0);
@@ -181,6 +182,8 @@ public class Searcher {
         docRelevantForTheQuery = new HashMap<>();
         //init the qDocQueue
         ranker.setqDocQueue(new PriorityQueue<>());
+        return QueryResults;
+
 
 
     }
@@ -438,19 +441,20 @@ public class Searcher {
         while (line != null) {
             line = br.readLine();
             if (line == null)
-                return ans;
+                break;
             while (line.length() > 0 && line.charAt(0) != '<') {
                 line = br.readLine();
                 if (line == null)
-                    return ans;
+                    break;
             }
             while (!(line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
                     && line.charAt(4) == '>')) {
                 line = br.readLine();
                 if (line == null)
-                    return ans;
+                    break;
             }
-
+            if (line == null)
+                break;
             if (line.length() > 6 && line.charAt(1) == 'n' && line.charAt(2) == 'u' && line.charAt(3) == 'm'
                     && line.charAt(4) == '>') {
                 k = line.length() - 1;
@@ -462,12 +466,16 @@ public class Searcher {
                 }
             }
             line = br.readLine();
+            if (line == null)
+                break;
             while (line.length() == 0 || line.charAt(0) != '<') {
                 line = br.readLine();
                 if (line == null)
-                    return ans;
+                    break;
             }
             k = 0;
+            if (line == null)
+                break;
             if (line.length() > 6 && line.charAt(1) == 't' && line.charAt(2) == 'i' && line.charAt(3) == 't'
                     && line.charAt(4) == 'l' && line.charAt(5) == 'e' && line.charAt(6) == '>') {
                 k = 7;
@@ -494,6 +502,36 @@ public class Searcher {
 
         }
         codesAndQueries = ans;
+
+        TreeMap<String, ArrayList<String>>  queriesAndResults = new TreeMap<>();
+        Iterator it = codesAndQueries.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            String key = (String) pair.getKey();
+            String queryString = (String) pair.getValue();
+            ArrayList<String> temp = pasreQuery(queryString);
+            QueryResults = new ArrayList<>();
+            queriesAndResults.put(key, temp);
+        }
+        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
+        FileOutputStream fos = new FileOutputStream(res.getPath());
+        OutputStreamWriter osr = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osr);
+        Iterator iter = queriesAndResults.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry pair = (Map.Entry) iter.next();
+            String key = (String) pair.getKey();
+            ArrayList<String> queryResult = (ArrayList<String> ) pair.getValue();
+
+            for (int i = 0; i <queryResult.size() ; i++) {
+                String s = key+" 0 " + queryResult.get(i) + " " + " 1 42.38 mt" + System.lineSeparator();
+                bw.write(s);
+                bw.flush();
+            }
+        }
+        fos.close();
+        osr.close();
+        bw.close();
         return codesAndQueries;
     }
 }
