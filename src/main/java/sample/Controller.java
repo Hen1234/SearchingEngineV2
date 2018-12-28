@@ -40,7 +40,8 @@ public class Controller implements Initializable {
     public HashMap<String, Docs> Documents;
     //public Stage stage;
     @FXML
-
+    public boolean corpusPathIsNull;
+    public boolean postingPathIsNull;
     public Button Run;
     public Button LoadCorpus;
     public Button SavePosting;
@@ -57,11 +58,12 @@ public class Controller implements Initializable {
     public CheckBox FilterByCity;
     public CheckBox isSemantic;
     public ComboBox Languages;
+    
     //public ComboBox Cities;
     public CheckComboBox Cities;
     public String FirstPath;
     public String SecondPath;
-
+    public String quertPathFromUser;
     public String pathFromUser;
 
 
@@ -75,16 +77,19 @@ public class Controller implements Initializable {
         }
         FirstPath = "";
         SecondPath = "";
-
+        corpusPathIsNull = true;
+        postingPathIsNull = true;
 
         searcher = new Searcher();
         Stemming.setSelected(false);
         reset.setDisable(true);
         ShowDictionary.setDisable(true);
-
+        quertPathFromUser = "";
         FilterByCity.setSelected(false);
         RunQuery.setDisable(true);
         LoadQueryFile.setDisable(true);
+        LoadDictionary.setDisable(true);
+        Run.setDisable(true);
 
 
     }
@@ -193,8 +198,11 @@ public class Controller implements Initializable {
             //pathFromUser = corpusFromUser.getPath();
             reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedCorpus.setText(corpusFromUser.getPath());
-
+            corpusPathIsNull = false;
+            if (!postingPathIsNull)
+                Run.setDisable(false);
         }
+
     }
 
     /**
@@ -205,7 +213,6 @@ public class Controller implements Initializable {
      * @throws IOException
      */
     public void postingPath(ActionEvent event) throws IOException {
-
         Stage stage = new Stage();
         DirectoryChooser dir = new DirectoryChooser();
         File postingPathFromUser = dir.showDialog(stage);
@@ -213,7 +220,11 @@ public class Controller implements Initializable {
             pathFromUser = postingPathFromUser.getPath();
             reader.setPostingPath(postingPathFromUser.getPath());
             txt_fiedPosting.setText(postingPathFromUser.getPath());
-
+            postingPathIsNull = false;
+            LoadDictionary.setDisable(false);
+            if (!corpusPathIsNull) {
+                Run.setDisable(false);
+            }
         }
 
     }
@@ -358,11 +369,10 @@ public class Controller implements Initializable {
             //pathFromUser = corpusFromUser.getPath();
             //reader.setCorpusPath(corpusFromUser.getPath());
             txt_fiedQueries.setText(queriesFromUser.getPath());
+            System.out.println(txt_fiedQueries);
             searcher.readQueriesFile(queriesFromUser.getPath());
 
         }
-
-
     }
 
     public void FilterByCity(ActionEvent event) {
@@ -372,9 +382,9 @@ public class Controller implements Initializable {
             citiesFromFilter(list);
 
 
-        } else {
+        }/* else {
 
-        }
+        }*/
     }
 
 

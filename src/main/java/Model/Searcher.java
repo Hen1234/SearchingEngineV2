@@ -429,7 +429,7 @@ public class Searcher {
         String queryNum = "";
         String query = "";
         try {
-            FileInputStream f = new FileInputStream(new File(path));
+            FileInputStream f = new FileInputStream(new File(path+"\\queries.txt"));
             InputStreamReader isr = new InputStreamReader(f);
             BufferedReader br = new BufferedReader(isr);
             //searcher.setDictionary(Dictionary);
