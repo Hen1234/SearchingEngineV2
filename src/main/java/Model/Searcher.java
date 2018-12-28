@@ -322,25 +322,21 @@ public class Searcher {
                     }
                 }
 
-                for (int j = 0; j < lineFromFile.length(); j++) {
+                for (int j = lineFromFile.length()-1; j < lineFromFile.length(); j--) {
                     if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
                             lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
                             lineFromFile.charAt(j + 3) == ' ') {
                         String df = "";
-                        int q = 4;
-                        while (j + q < lineFromFile.length()) {
-                            if (lineFromFile.charAt(j + q) != ' ') {
-                                df = df + lineFromFile.charAt(j + q);
-                            } else {
-                                break;
-                            }
-                            q++;
-
+                        j=j+4;
+                        while (lineFromFile.charAt(j)!=' ') {
+                            df = df + lineFromFile.charAt(j);
+                            j++;
                         }
 
                         try {
                             Integer dfInt = Integer.parseInt(df);
                             currentQueryTerm.setDf(dfInt);
+                            break;
                         } catch (Exception e) {
                         }
 
@@ -503,35 +499,30 @@ public class Searcher {
         }
         codesAndQueries = ans;
 
-        TreeMap<String, ArrayList<String>>  queriesAndResults = new TreeMap<>();
         Iterator it = codesAndQueries.entrySet().iterator();
+        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
+        FileOutputStream fos = new FileOutputStream(res.getPath());
+        OutputStreamWriter osr = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osr);
+        StringBuilder s = new StringBuilder("");
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             String key = (String) pair.getKey();
             String queryString = (String) pair.getValue();
             ArrayList<String> temp = pasreQuery(queryString);
-            QueryResults = new ArrayList<>();
-            queriesAndResults.put(key, temp);
-        }
-        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
-        FileOutputStream fos = new FileOutputStream(res.getPath());
-        OutputStreamWriter osr = new OutputStreamWriter(fos);
-        BufferedWriter bw = new BufferedWriter(osr);
-        Iterator iter = queriesAndResults.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry pair = (Map.Entry) iter.next();
-            String key = (String) pair.getKey();
-            ArrayList<String> queryResult = (ArrayList<String> ) pair.getValue();
-
-            for (int i = 0; i <queryResult.size() ; i++) {
-                String s = key+" 0 " + queryResult.get(i) + " " + " 1 42.38 mt" + System.lineSeparator();
-                bw.write(s);
-                bw.flush();
+            for (int i = 0; i <temp.size() ; i++) {
+                s.append(key+" 0 " + temp.get(i) + " " + " 1 42.38 mt" + System.lineSeparator());
+                /*bw.write(s);
+                bw.flush();*/
             }
+            QueryResults = new ArrayList<>();
         }
-        fos.close();
+        bw.write(s.toString());
+        bw.flush();
         osr.close();
+        fos.close();
         bw.close();
+
         return codesAndQueries;
     }
 }
