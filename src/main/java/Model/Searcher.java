@@ -99,7 +99,7 @@ public class Searcher {
     }
 
     public ArrayList<String> pasreQuery(String query) throws IOException {
-
+        System.out.println("Query: "+query);
         //init the Documents and Dictionary HashMap from the index
         Documents = Indexer.docsHashMap;
         Dictionary = Indexer.sorted;
@@ -124,6 +124,7 @@ public class Searcher {
 
             } else {
                 QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, false);
+                if(i==0)current.setFirstWordInQuery(true);
                 addDocsRelevantFromHeaders(current);
 
             }
@@ -148,10 +149,6 @@ public class Searcher {
             Iterator it = temp.iterator();
             while (it.hasNext()) {
                 String docName = (String) it.next();
-                System.out.println("itratorDocsHeader: " + docName);
-                if (docName.equals("FBIS3-59016")) {
-                    System.out.println("here");
-                }
                 if (!docRelevantForTheQuery.containsKey(docName)) {
                     QueryDoc toInsert = new QueryDoc(docName);
                     toInsert.setLength(Documents.get(docName).getDocLength());
@@ -188,7 +185,6 @@ public class Searcher {
             bw.write(s);
             bw.flush();*/
             QueryResults.add(currentQueryDocFromQueue.docNO);
-            System.out.println(currentQueryDocFromQueue.toString() + System.lineSeparator() + " after rankin");
             currentQueryDocFromQueue.setRank(0);
             b++;
         }
@@ -208,6 +204,7 @@ public class Searcher {
     }
 
     private void sendToRanker() throws IOException {
+
         String folderName = ReadFile.postingPath;
         /*if (ReadFile.toStem) {
             folderName = folderName + "\\" + "WithStemming";
@@ -223,13 +220,8 @@ public class Searcher {
         Iterator it = docRelevantForTheQuery.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            /*String s = "351 0 "+((QueryDoc) pair.getValue()).docNO+" "+" 1 42.38 mt"+System.lineSeparator();
-            bw.write(s);
-            bw.flush();*/
             ranker.getQueryDocFromSearcher((QueryDoc) pair.getValue(), splitedQueryAfterParse.length);
             RankedQueryDocs.add((QueryDoc) pair.getValue());
-            System.out.println(docRelevantForTheQuery.size());
-            System.out.println(pair.getKey());
         }
     }
 
@@ -239,9 +231,11 @@ public class Searcher {
         QueryTerm currentQueryTerm = null;
 
         //check if the term exists the dictionary
+        boolean isNull = true;
         if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
             //create a new QueryTerm
             currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
+            isNull = false;
             //update isSynonym
             if (isSynonym) currentQueryTerm.setSynonym(true);
         } else {
@@ -249,7 +243,21 @@ public class Searcher {
             if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
                 //create a new QueryTerm
                 currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase());
+                isNull = false;
                 if (isSynonym) currentQueryTerm.setSynonym(true);
+            }
+        }
+
+        if (isNull) {
+            String withS = "";
+            if (Character.isLowerCase(StringcurretTermOfQuery.charAt(StringcurretTermOfQuery.length()-1))) {
+                if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase() + "s")) {
+                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase() + "s");
+                }
+            } else {
+                if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase() + "S")) {
+                    currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toUpperCase() + "S");
+                }
             }
         }
 
@@ -310,6 +318,14 @@ public class Searcher {
                                     currentQueryTerm.getDocsAndAmount().put(docNo, tf);
                                     //add the QueryTerm to the relevant doc
                                     QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
+
+                                    Iterator it = docFromOriginalDocs.getMostFiveFrequencyEssences().iterator();
+                                    while (it.hasNext()){
+                                        TermsPerDoc cur = (TermsPerDoc) it.next();
+                                        if (cur.getValue().equals(currentQueryTerm.getValue())){
+                                            newQueryDoc.setQueryContainEntitiy(true);
+                                        }
+                                    }
                                     newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
                                     //add the QueryTerm to the relevant doc
                                     newQueryDoc.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
@@ -329,6 +345,15 @@ public class Searcher {
                             currentQueryTerm.getDocsAndAmount().put(docNo, tf);
 
                             QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
+
+                            Iterator it = docFromOriginalDocs.getMostFiveFrequencyEssences().iterator();
+                            while (it.hasNext()){
+                                TermsPerDoc cur = (TermsPerDoc) it.next();
+                                if (cur.getValue().equals(currentQueryTerm.getValue())){
+                                    newQueryDoc.setQueryContainEntitiy(true);
+                                }
+                            }
+
                             //set the length of the relevant doc
                             newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
                             //add the QueryTerm to the relevant doc
@@ -501,8 +526,6 @@ public class Searcher {
                     k++;
                 }
             }
-            System.out.println("queryNum: " + queryNum);
-            System.out.println("query: " + query);
             while (queryNum != null && queryNum.length() > 0 && queryNum.charAt(queryNum.length() - 1) == ' ') {
                 queryNum = queryNum.substring(0, queryNum.length() - 1);
             }
@@ -510,7 +533,6 @@ public class Searcher {
                 query = query.substring(0, query.length() - 1);
             }
 
-            System.out.println(" ");
             ans.put(queryNum, query);
             queryNum = "";
             query = "";
@@ -536,7 +558,8 @@ public class Searcher {
             QueryResults = new ArrayList<>();
         }
 
-        File res = new File(ReadFile.postingPath + "\\" + "result.txt");
+        //File res = new File(ReadFile.postingPath + "\\" + "result.txt");
+        File res = new File("C:\\Users\\osherhe\\Downloads\\trec_eval"+"\\result.txt");
         FileOutputStream fos = new FileOutputStream(res.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);

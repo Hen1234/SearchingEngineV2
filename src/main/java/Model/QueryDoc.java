@@ -10,6 +10,7 @@ public class QueryDoc implements Comparable {
     int length;
     double rank;
     boolean containsQueryTermInHeader;
+    boolean isQueryContainEntitiy;
 
     public QueryDoc(String docNO) {
         this.docNO = docNO;
@@ -23,6 +24,14 @@ public class QueryDoc implements Comparable {
 
     public void setContainsQueryTermInHeader(boolean containsQueryTermInHeader) {
         this.containsQueryTermInHeader = containsQueryTermInHeader;
+    }
+
+    public boolean isQueryContainEntitiy() {
+        return isQueryContainEntitiy;
+    }
+
+    public void setQueryContainEntitiy(boolean queryContainEntitiy) {
+        isQueryContainEntitiy = queryContainEntitiy;
     }
 
     public String getDocNO() {

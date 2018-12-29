@@ -1,6 +1,4 @@
 package sample;
-
-
 import Model.*;
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import javafx.collections.FXCollections;
@@ -146,6 +144,9 @@ public class Controller implements Initializable {
             HashMap<String, City> cities = reader.getCities();
             Cities.getItems().addAll(citiesObservableList(cities));
             Cities.setDisable(false);
+
+            //init documents
+            Documents = reader.getIndexer().getDocsHashMap();
 
             //setDisable to the relevant buttons
             LoadQueryFile.setDisable(false);
@@ -340,14 +341,14 @@ public class Controller implements Initializable {
         }
 
         try {
-            //loadCities();
+            loadCities();
         } catch (Exception e) {
             badPathAlert.show();
             return;
         }
 
         try {
-            //loadLanguages();
+            loadLanguages();
         } catch (Exception e) {
             badPathAlert.show();
             return;
@@ -585,7 +586,7 @@ public class Controller implements Initializable {
             String entities =  "";
             for (int i = 0; i < choicesDoc.getMostFiveFrequencyEssences().size(); i++) {
                 TermsPerDoc current = choicesDoc.getMostFiveFrequencyEssences().poll();
-                entities = entities+ current.getValue() + "\n";
+                entities = entities+ current.getValue()+" - "+current.getTf() + "\n";
                 newDocQueue.add(current);
 
             }

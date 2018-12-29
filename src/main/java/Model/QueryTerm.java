@@ -8,6 +8,7 @@ public class QueryTerm {
 
     String value;
     HashMap<String, Integer> docsAndAmount; //docNo -> amountOfAppearanceInDoc
+    boolean isFirstWordInQuery;
     //ArrayList<QueryDoc> DocsContainTerm;
 
     int df;
@@ -20,6 +21,7 @@ public class QueryTerm {
         /*docs = new ArrayList<String>();
         timesInDocs = new ArrayList<Integer>();*/
         appearanceInQuery =0;
+        isFirstWordInQuery = false;
         this.value = value;
         docsAndAmount = new HashMap<String, Integer>();
         df =0;
@@ -28,6 +30,14 @@ public class QueryTerm {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isFirstWordInQuery() {
+        return isFirstWordInQuery;
+    }
+
+    public void setFirstWordInQuery(boolean firstWordInQuery) {
+        isFirstWordInQuery = firstWordInQuery;
     }
 
     public HashMap<String, Integer> getDocsAndAmount() {

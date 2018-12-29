@@ -568,7 +568,7 @@ public class Indexer {
                         }
                     }
 
-                    if (countWritenLines > 90000) {
+                    if (countWritenLines > 35000) {
                         lineIdx = 1;
                         toWriteidx++;
                         countWritenLines = 0;
@@ -664,7 +664,7 @@ public class Indexer {
                             isBigLetterInQueue = true;
                         }
                     }
-                    if (countWritenLines > 90000) {
+                    if (countWritenLines > 35000) {
                         toWriteidx++;
                         lineIdx = 1;
                         countWritenLines = 0;
@@ -750,7 +750,7 @@ public class Indexer {
                             }
                         }
                     }
-                    if (countWritenLines > 90000) {
+                    if (countWritenLines > 35000) {
                         toWriteidx++;
                         lineIdx = 1;
                         countWritenLines = 0;
@@ -810,7 +810,7 @@ public class Indexer {
                             isBigLetterInQueue = true;
                         }
                     }
-                    if (countWritenLines > 90000) {
+                    if (countWritenLines > 35000) {
                         toWriteidx++;
                         lineIdx = 1;
                         countWritenLines = 0;

@@ -18,7 +18,6 @@ public class Ranker {
         qDocQueue = new PriorityQueue<QueryDoc>();
         queryLength = 0;
         debug = new HashSet<String>();
-        initDebug();
     }
 
 
@@ -46,9 +45,13 @@ public class Ranker {
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
             /*double BM25Value = BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength);
             double tfIDFValue = tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength);*/
-            currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength)/* + ((tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength)))*/);
+            currentQueryDoc.setRank(currentQueryDoc.getRank() + BM25func(currentQueryTerm, currentQueryDoc,(double)queryLength));
             /*+ tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength))*/;
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
+        }
+        currentQueryDoc.setRank(currentQueryDoc.getRank()*currentQueryDoc.getQueryTermsInDocsAndQuery().size());
+        if(currentQueryDoc.isQueryContainEntitiy){
+            currentQueryDoc.setRank(currentQueryDoc.getRank()*5);
         }
         //update the currentQueryDoc's rank by cosSim
         //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
@@ -81,9 +84,6 @@ public class Ranker {
     private double BM25func(QueryTerm currentQueryTerm, QueryDoc currentQueryDoc , double queryLength) {
 
 
-        if (currentQueryDoc.docNO.equals("FBIS3-59016")){
-            System.out.println("here");
-        }
         double cwq = currentQueryTerm.getAppearanceInQuery();
         double d = currentQueryDoc.getLength();
         double df = currentQueryTerm.getDf();
@@ -92,10 +92,7 @@ public class Ranker {
         double k = 2;
         double b = 0.75;
 
-        if (currentQueryTerm.isSynonym){
-            System.out.println(" ");
-        }
-        //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) /d ; // normalization
+        //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) d ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
         if (currentQueryDoc.isContainsQueryTermInHeader()){
             cwd = cwd + 5; // 5 or 4
@@ -103,22 +100,25 @@ public class Ranker {
         }
 
         /*return (Math.log10((M + 1) / df) * cwq * (((b+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl)))))));*/
+        if(currentQueryTerm.isFirstWordInQuery())
+            return 5 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
         if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ) {
-            System.out.println(" f");
-            return 0.5 * (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+            return 0.5 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
         }
 
         if(currentQueryTerm.isSynonym() && currentQueryDoc.isContainsQueryTermInHeader() ) {
-            System.out.println(" f");
-            return 0.6 * (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+            return 0.6 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
         }
 
         if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
-            return (Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl)))))));
+            return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
 
-        return Math.log10((M + 1) / df) * cwq * ((3 * cwd) / (cwd + (2 * (0.25 + (0.75 * (d / avdl))))));
+
+
+
+        return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
     }
 
@@ -174,57 +174,6 @@ public class Ranker {
         System.out.println("RankCosSim= "+Mone/Mechane);
         return (Mone/Mechane);
     }*/
-    private void initDebug() {
 
-        debug.add("FBIS3-10551");
-        debug.add("FBIS3-10646");
-        debug.add("FBIS3-10697");
-        debug.add("FBIS3-11107");
-        debug.add("FBIS3-19947");
-        debug.add("FBIS3-33035");
-        debug.add("FBIS3-33505");
-        debug.add("FBIS3-50570");
-        debug.add("FBIS3-59016");
-        debug.add("FBIS4-10762");
-        debug.add("FBIS4-11114");
-        debug.add("FBIS4-34579");
-        debug.add("FBIS4-34996");
-        debug.add("FBIS4-35048");
-        debug.add("FBIS4-56243");
-        debug.add("FBIS4-56741");
-        debug.add("FBIS4-57354");
-        debug.add("FBIS4-64976");
-        debug.add("FBIS4-9937");
-        debug.add("FT921-2097");
-        debug.add("FT921-6272");
-        debug.add("FT921-6603");
-        debug.add("FT921-8458");
-        debug.add("FT922-14936");
-        debug.add("FT922-15099");
-        debug.add("FT922-3165");
-        debug.add("FT922-8324");
-        debug.add("FT923-11890");
-        debug.add("FT923-1456");
-        debug.add("FT924-1564");
-        debug.add("FT931-10913");
-        debug.add("FT931-16617");
-        debug.add("FT931-932");
-        debug.add("FT932-16710");
-        debug.add("FT932-6577");
-        debug.add("FT934-13429");
-        debug.add("FT934-13954");
-        debug.add("FT934-4629");
-        debug.add("FT934-4848");
-        debug.add("FT934-4856");
-        debug.add("FT941-13429");
-        debug.add("FT941-7250");
-        debug.add("FT941-9999");
-        debug.add("FT942-12805");
-        debug.add("FT943-14758");
-        debug.add("FT943-15117");
-        debug.add("FT944-15849");
-
-
-    }
 
 }
