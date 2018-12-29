@@ -475,10 +475,11 @@ public class Controller implements Initializable {
             try {
                 searcher.readQueriesFile(queriesFromUser);
             } catch (Exception e) {
-                badPathAlert.setContentText("Please choose a valid path for queries file");
-                badPathAlert.show();
-                badPathAlert.setContentText("Please insert Valid path");
-                return;
+                e.printStackTrace();
+//                badPathAlert.setContentText("Please choose a valid path for queries file");
+//                badPathAlert.show();
+//                badPathAlert.setContentText("Please insert Valid path");
+//                return;
             }
         }
 

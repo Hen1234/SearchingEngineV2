@@ -1,9 +1,6 @@
 package Model;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Ranker {
 
@@ -55,7 +52,33 @@ public class Ranker {
         }
         //update the currentQueryDoc's rank by cosSim
         //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
+        inHeader(currentQueryDoc);
+        moreThanOneTerm(currentQueryDoc);
+        checkLocations(currentQueryDoc);
         qDocQueue.add(currentQueryDoc);
+    }
+
+    private void checkLocations(QueryDoc currentQueryDoc) {
+
+        ArrayList<String> locations = currentQueryDoc.getLocations();
+        for (int i = 0; i <locations.size() ; i++) {
+            for (int j = 0; j < locations.size() ; j++) {
+                if(locations.get(i).equals(locations.get(j)) || locations.get(i).equals(locations.get(j)+1)){
+
+                    currentQueryDoc.setRank(currentQueryDoc.getRank()+15);
+
+                }
+            }
+
+        }
+
+    }
+
+    private void moreThanOneTerm(QueryDoc currentQueryDoc) {
+
+        if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()>0){
+            currentQueryDoc.setRank(currentQueryDoc.getRank()+20);
+        }
     }
 
     private double tfIDF (QueryTerm currentQueryTerm, QueryDoc currentQueryDoc , double queryLength) {
@@ -89,15 +112,16 @@ public class Ranker {
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
-        double k = 2;
+        double k = 1.2;
         double b = 0.75;
 
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) d ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
-        if (currentQueryDoc.isContainsQueryTermInHeader()){
-            cwd = cwd + 5; // 5 or 4
-            //df++;
-        }
+
+//        if (currentQueryDoc.isContainsQueryTermInHeader()){
+//            cwd = cwd + 5; // 5 or 4
+//            //df++;
+//        }
 
         /*return (Math.log10((M + 1) / df) * cwq * (((b+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl)))))));*/
         if(currentQueryTerm.isFirstWordInQuery())
@@ -111,8 +135,8 @@ public class Ranker {
             return 0.6 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
         }
 
-        if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
-            return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
+//        if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
+//            return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
 
 
@@ -174,6 +198,14 @@ public class Ranker {
         System.out.println("RankCosSim= "+Mone/Mechane);
         return (Mone/Mechane);
     }*/
+
+    private void inHeader(QueryDoc curerntQueryDoc){
+
+        if(curerntQueryDoc.containsQueryTermInHeader){
+            curerntQueryDoc.setRank(curerntQueryDoc.getRank()+10);
+        }
+    }
+
 
 
 }

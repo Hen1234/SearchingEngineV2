@@ -99,7 +99,7 @@ public class Searcher {
     }
 
     public ArrayList<String> pasreQuery(String query) throws IOException {
-        System.out.println("Query: "+query);
+        System.out.println("Query: " + query);
         //init the Documents and Dictionary HashMap from the index
         Documents = Indexer.docsHashMap;
         Dictionary = Indexer.sorted;
@@ -124,7 +124,7 @@ public class Searcher {
 
             } else {
                 QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, false);
-                if(i==0)current.setFirstWordInQuery(true);
+                if (i == 0) current.setFirstWordInQuery(true);
                 addDocsRelevantFromHeaders(current);
 
             }
@@ -250,7 +250,7 @@ public class Searcher {
 
         if (isNull) {
             String withS = "";
-            if (Character.isLowerCase(StringcurretTermOfQuery.charAt(StringcurretTermOfQuery.length()-1))) {
+            if (Character.isLowerCase(StringcurretTermOfQuery.charAt(StringcurretTermOfQuery.length() - 1))) {
                 if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase() + "s")) {
                     currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase() + "s");
                 }
@@ -281,12 +281,14 @@ public class Searcher {
             //ArrayList<Integer> amountsPerDoc = new ArrayList<>();
             String docNo = "";
             String tfString = "";
+            String locations = "";
 
             //update the hashMap of docs and df of the currentQueryTerm
             for (int k = 0; k < lineFromFile.length(); k++) {
 
                 docNo = "";
                 tfString = "";
+                locations = "";
                 if (lineFromFile.charAt(k) == ':') {
                     k++;
 
@@ -302,6 +304,27 @@ public class Searcher {
                         tfString = tfString + lineFromFile.charAt(k);
                         k++;
                     }
+
+                    //find location in the doc
+                    k++;
+                    while (k>lineFromFile.length()-1 && lineFromFile.charAt(k) != 'd') {
+                        locations = locations + lineFromFile.charAt(k);
+                        k++;
+                    }
+
+                    String[] locations1 = locations.split(" ");
+                    for (int i = 0; i < locations1.length; i++) {
+                        for (int j = 0; j < locations1[i].length(); j++) {
+                            if (locations1[i].charAt(j) == ',') {
+                                locations1[i] = locations1[i].substring(i, locations1[i].length());
+                                break;
+
+                            }
+
+                        }
+
+                    }
+
 
                     int tf = Integer.parseInt(tfString);
 
@@ -320,13 +343,20 @@ public class Searcher {
                                     QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
 
                                     Iterator it = docFromOriginalDocs.getMostFiveFrequencyEssences().iterator();
-                                    while (it.hasNext()){
+                                    while (it.hasNext()) {
                                         TermsPerDoc cur = (TermsPerDoc) it.next();
-                                        if (cur.getValue().equals(currentQueryTerm.getValue())){
+                                        if (cur.getValue().equals(currentQueryTerm.getValue())) {
                                             newQueryDoc.setQueryContainEntitiy(true);
                                         }
                                     }
+
                                     newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
+                                    //update the locations
+                                    ArrayList<String> locat = newQueryDoc.getLocations();
+                                    for (int i = 0; i < locations1.length; i++) {
+                                        locat.add(locations1[i]);
+
+                                    }
                                     //add the QueryTerm to the relevant doc
                                     newQueryDoc.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
                                     //add the new QueryDoc to the HashSet of the relevant docs for the query
@@ -347,15 +377,20 @@ public class Searcher {
                             QueryDoc newQueryDoc = new QueryDoc(docFromOriginalDocs.getDocNo());
 
                             Iterator it = docFromOriginalDocs.getMostFiveFrequencyEssences().iterator();
-                            while (it.hasNext()){
+                            while (it.hasNext()) {
                                 TermsPerDoc cur = (TermsPerDoc) it.next();
-                                if (cur.getValue().equals(currentQueryTerm.getValue())){
+                                if (cur.getValue().equals(currentQueryTerm.getValue())) {
                                     newQueryDoc.setQueryContainEntitiy(true);
                                 }
                             }
 
                             //set the length of the relevant doc
                             newQueryDoc.setLength(docFromOriginalDocs.getDocLength());
+                            ArrayList<String> locat = newQueryDoc.getLocations();
+                            for (int i = 0; i < locations1.length; i++) {
+                                locat.add(locations1[i]);
+
+                            }
                             //add the QueryTerm to the relevant doc
                             newQueryDoc.getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
                             //add the new QueryDoc to the HashSet of the relevant docs for the query
@@ -366,25 +401,27 @@ public class Searcher {
                     }
                 }
 
-                for (int j = lineFromFile.length() - 1; j < lineFromFile.length(); j--) {
-                    if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
-                            lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
-                            lineFromFile.charAt(j + 3) == ' ') {
-                        String df = "";
-                        j = j + 4;
-                        while (lineFromFile.charAt(j) != ' ') {
-                            df = df + lineFromFile.charAt(j);
-                            j++;
-                        }
 
-                        try {
-                            Integer dfInt = Integer.parseInt(df);
-                            currentQueryTerm.setDf(dfInt);
-                            break;
-                        } catch (Exception e) {
-                        }
-
+            }
+            //update df
+            for (int j = lineFromFile.length() - 1; j < lineFromFile.length(); j--) {
+                if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
+                        lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
+                        lineFromFile.charAt(j + 3) == ' ') {
+                    String df = "";
+                    j = j + 4;
+                    while (lineFromFile.charAt(j) != ' ') {
+                        df = df + lineFromFile.charAt(j);
+                        j++;
                     }
+
+                    try {
+                        Integer dfInt = Integer.parseInt(df);
+                        currentQueryTerm.setDf(dfInt);
+                        break;
+                    } catch (Exception e) {
+                    }
+
                 }
             }
 
@@ -395,7 +432,9 @@ public class Searcher {
                     currentQueryTerm.setAppearanceInQuery(currentQueryTerm.getAppearanceInQuery() + 1);
                 }
             }
-        } else { // query term not in dictionary (null)
+        } else
+
+        { // query term not in dictionary (null)
             return new QueryTerm(StringcurretTermOfQuery);
         }
 
@@ -559,7 +598,7 @@ public class Searcher {
         }
 
         //File res = new File(ReadFile.postingPath + "\\" + "result.txt");
-        File res = new File("C:\\Users\\osherhe\\Downloads\\trec_eval"+"\\result.txt");
+        File res = new File("C:\\Users\\osherhe\\Downloads\\trec_eval" + "\\result.txt");
         FileOutputStream fos = new FileOutputStream(res.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);

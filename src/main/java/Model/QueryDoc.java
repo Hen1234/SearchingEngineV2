@@ -11,11 +11,13 @@ public class QueryDoc implements Comparable {
     double rank;
     boolean containsQueryTermInHeader;
     boolean isQueryContainEntitiy;
+    ArrayList<String> locations;
 
     public QueryDoc(String docNO) {
         this.docNO = docNO;
         queryTermsInDocsAndQuery = new HashMap<>();
         containsQueryTermInHeader=false;
+        locations = new ArrayList<>();
     }
 
     public boolean isContainsQueryTermInHeader() {
@@ -25,6 +27,12 @@ public class QueryDoc implements Comparable {
     public void setContainsQueryTermInHeader(boolean containsQueryTermInHeader) {
         this.containsQueryTermInHeader = containsQueryTermInHeader;
     }
+
+    public ArrayList<String> getLocations() {
+        return locations;
+    }
+
+
 
     public boolean isQueryContainEntitiy() {
         return isQueryContainEntitiy;
