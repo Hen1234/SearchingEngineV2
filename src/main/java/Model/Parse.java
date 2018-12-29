@@ -100,6 +100,7 @@ public class Parse {
      */
     public String parser(Docs doc, String t, boolean toStem, boolean isQuery, boolean isHeader) {
 
+
         StringBuilder termsOfQuery = new StringBuilder("");
         StringBuilder termsOfHeader = new StringBuilder("");
         //add the city to the HashMap
@@ -117,6 +118,10 @@ public class Parse {
         for (int i = 0; i < text.length; i++) {
             if (isStopWord(text[i]))
                 continue;
+
+            if (text[i].contains("-")){
+                System.out.println("");
+            }
 
             if (text[i].length() > 0 && (text[i].charAt(0) == '/' || text[i].charAt(0) == '|'
                     || text[i].charAt(0) == '-' || text[i].charAt(0) == '\''
@@ -169,7 +174,8 @@ public class Parse {
                 continue;
 
             }
-            if (isContainDash(text[i])) {
+
+            /*if (isContainDash(text[i])) {
                 if (!isQuery && !isHeader) {
                     addTheDictionary(text[i], doc, i);
                 } else {
@@ -182,7 +188,8 @@ public class Parse {
                 }
 
                 continue;
-            }
+            }*/
+
             if (isNumericStart(text[i])) {
 
                 //text.set(i, replaceOby0(text.get(i))); /// replace O by 0
@@ -697,8 +704,35 @@ public class Parse {
                 }
             }
 
+
             if (!isQuery && !isHeader) {
-                addTheDictionary(text[i], doc, i);
+                if (isContainSlash(text[i])) {
+                    System.out.println(text[i]);
+                    int contWords =0;
+                    String ans1 = "";
+                    for (int x = 0; x < text[i].length(); x++) {
+                        if (text[i].charAt(x) != '-' && text[i].charAt(x) != '/' && text[i].charAt(x) != '|') {
+                            ans1 = ans1 + text[i].charAt(x);
+                        } else {
+                            if (ans1.length() >0) {
+                                System.out.println("fixed: "+ans1);
+                                addTheDictionary(ans1, doc, i + contWords);
+                                contWords++;
+                                ans1 = "";
+                            }
+                        }
+                    }
+                    if (ans1.length() > 0){
+                        System.out.println("fixed: "+ans1);
+                        addTheDictionary(ans1, doc, i + contWords);
+                        contWords++;
+                        ans1 = "";
+                        contWords =0;
+                    }
+                }
+                else {
+                    addTheDictionary(text[i], doc, i);
+                }
             }else{
                 /*if (toStem){
                     termsOfQuery.append(stemmer.stemming(text[i]+" "));
@@ -756,6 +790,14 @@ public class Parse {
             else
                 return null;
         }
+    }
+
+    private boolean isContainSlash(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '/' || str.charAt(i) == '|'
+                    || str.charAt(i) == '-') return true;
+        }
+        return false;
     }
 
     // replace 'o' with zero
