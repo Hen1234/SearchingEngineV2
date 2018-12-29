@@ -236,10 +236,10 @@ public class ReadFile implements Serializable {
                 for (Element element : docs) {
                     text = element.select("TEXT").text();
                     serial = element.select("DOCNO").text();
-                    if(serial.equals("FT934-11665")){
-                        System.out.println("FT934-11665 fileName= "+f.getName());
-                        return;
-                    }
+//                    if(serial.equals("FT934-11665")){
+//                        System.out.println("FT934-11665 fileName= "+f.getName());
+//                        return;
+//                    }
                     text = replaceFromMap(text, this.replacements);
                     Docs curerntDoc = new Docs(serial, city, element.select("DATE1").text());
                     /////////////////////checkk

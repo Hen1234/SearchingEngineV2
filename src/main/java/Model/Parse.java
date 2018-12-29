@@ -183,7 +183,7 @@ public class Parse {
 
             }
 
-            /*if (isContainDash(text[i])) {
+            if (isContainDash(text[i])) {
                 if (!isQuery && !isHeader) {
                     addTheDictionary(text[i], doc, i);
                 } else {
@@ -196,7 +196,7 @@ public class Parse {
                 }
 
                 continue;
-            }*/
+            }
 
             if (isNumericStart(text[i])) {
 
@@ -1123,12 +1123,12 @@ public class Parse {
 
     //update the Integer of the given doc (per term) and send add the term to the tempDictionary
     private void addTheDictionary(String termValue, Docs doc, int i) {
-        if(termValue.equals("blood")){
-            System.out.println("blood i= "+i);
-        }
-        if(termValue.equals("alcohol")){
-            System.out.println("alcohol i= "+i);
-        }
+//        if(termValue.equals("blood")){
+//            System.out.println("blood i= "+i);
+//        }
+//        if(termValue.equals("alcohol")){
+//            System.out.println("alcohol i= "+i);
+//        }
         doc.setDocLength(doc.getDocLength()+1);
         boolean isProblem = false;
         if (!(termValue.length() > 0) || termValue == null) {
