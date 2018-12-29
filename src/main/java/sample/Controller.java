@@ -36,9 +36,11 @@ public class Controller implements Initializable {
 
     static ReadFile reader;
     static Searcher searcher;
+    //bring from disc to memory
     public TreeMap<String, String> Dictionary;
     public HashMap<String, Docs> Documents;
     public ArrayList<String> DicToShow;
+    HashMap<String, City> CitiesHashMap;
     //public Stage stage;
     @FXML
     public boolean corpusPathIsNull;
@@ -129,34 +131,27 @@ public class Controller implements Initializable {
             else {
                 SecondPath = txt_fiedPosting.getText();
             }*/
+            //init the Languages
             HashSet<String> languages = reader.getLanguages();
             Iterator it = languages.iterator();
-
             Languages.setItems(FXCollections.observableArrayList(languages));
             Languages.setDisable(false);
+
+            //setDisable to the relevant buttons
             reset.setDisable(false);
             ShowDictionary.setDisable(false);
-
             LoadDictionary.setDisable(false);
 
+            //init the cities
             HashMap<String, City> cities = reader.getCities();
-//            HashSet<String> citiesName = new HashSet<String>();
-//            Iterator it2 = cities.entrySet().iterator();
-//            while (it2.hasNext()) {
-//                Map.Entry pair = (Map.Entry) it2.next();
-//                String key = (String) pair.getKey();
-//                citiesName.add(key);
-//            }
-//            for (String string: citiesName){
-//                System.out.println(string);
-//            }
-
-
             Cities.getItems().addAll(citiesObservableList(cities));
             Cities.setDisable(false);
+
+            //setDisable to the relevant buttons
             LoadQueryFile.setDisable(false);
             RunQuery.setDisable(false);
 
+            //show the details message
             StringBuilder data = new StringBuilder("Number of Documents: ");
             data.append(reader.getIndexer().getDocuments().size());
             data.append(System.lineSeparator());
@@ -344,11 +339,36 @@ public class Controller implements Initializable {
             return;
         }
 
+        try {
+            //loadCities();
+        } catch (Exception e) {
+            badPathAlert.show();
+            return;
+        }
+
         reader.getIndexer().setPathDir(postpath);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
         RunQueryFile.setDisable(false);
         LoadQueryFile.setDisable(false);
+
+    }
+
+    private void loadCities() throws IOException {
+
+        String postpath = pathFromUser;
+        /*if (Stemming.isSelected()) {
+            postpath = pathFromUser + "\\WithStemming";
+        } else {
+            postpath = pathFromUser + "\\WithoutStemming";
+        }*/
+        byte[] encode = Files.readAllBytes(Paths.get(postpath + File.separator + "CitiesAsObject.txt"));
+        byte[] output = Base64.getMimeDecoder().decode(encode);
+        Object out = SerializationUtils.deserialize(output);
+        CitiesHashMap = ((HashMap<String, City>) out);
+        //searcher.setDocuments(Documents);
+        reader.setCities(CitiesHashMap);
+
 
     }
 

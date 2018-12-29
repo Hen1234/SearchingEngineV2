@@ -1,12 +1,13 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * The class represents a City in the corpus
  */
-public class City {
+public class City implements Serializable {
 
     String name;
     String currency;

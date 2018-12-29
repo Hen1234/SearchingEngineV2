@@ -147,6 +147,10 @@ public class ReadFile implements Serializable {
         return cities;
     }
 
+    public void setCities(HashMap<String, City> cities) {
+        this.cities = cities;
+    }
+
     /**
      * Setter for the path of the corpus got from the user
      *
@@ -310,6 +314,7 @@ public class ReadFile implements Serializable {
         writeDocumentsAsObject();
         writeTermsInHeaderAsObject();
         writeDicToShowAsObject();
+        writeCitiesAsObject();
         //write the Documents as object
 //        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
 //        ObjectOutputStream oos1 = null;
@@ -331,6 +336,19 @@ public class ReadFile implements Serializable {
         }
         indexer.deleteTemporaryFiles(postingPath);
         createDocsPosting(indexer.getDocsHashMap());
+
+    }
+
+    private void writeCitiesAsObject() {
+
+        byte[] input = SerializationUtils.serialize(this.cities);
+        byte[] encode = Base64.getEncoder().encode(input);
+        try {
+            FileUtils.writeByteArrayToFile(new File(postingPath + "\\" + "CitiesAsObject.txt"), encode);
+        } catch (IOException e) {
+
+        }
+
 
     }
 
