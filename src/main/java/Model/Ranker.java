@@ -113,7 +113,7 @@ public class Ranker {
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
         double k = 1.2;
-        double b = 0.75;
+        double b = 0.35;
 
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) d ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
