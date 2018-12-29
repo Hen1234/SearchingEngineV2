@@ -143,6 +143,10 @@ public class ReadFile implements Serializable {
         return languages;
     }
 
+    public void setLanguages(HashSet<String> languages) {
+        this.languages = languages;
+    }
+
     public HashMap<String, City> getCities() {
         return cities;
     }
@@ -311,10 +315,13 @@ public class ReadFile implements Serializable {
         } catch (Exception e) {
         }
 
+        //write the next as object
         writeDocumentsAsObject();
         writeTermsInHeaderAsObject();
         writeDicToShowAsObject();
         writeCitiesAsObject();
+        writeLanguagesAsObject();
+
         //write the Documents as object
 //        File toWriteDocsObject = new File(postingPath + "\\" + "DocsAsObject.txt");
 //        ObjectOutputStream oos1 = null;
@@ -334,8 +341,30 @@ public class ReadFile implements Serializable {
             citiesIndexer.mergeTheCities(p.getCities());
         } catch (Exception e) {
         }
+
+        //delete temporary files
         indexer.deleteTemporaryFiles(postingPath);
+
+        //create docs posting
         createDocsPosting(indexer.getDocsHashMap());
+
+    }
+
+    private void writeLanguagesAsObject() {
+
+        //write the Languages as object
+        File toWriteSortedAsObject = new File(postingPath + "\\" + "LanguagesAsObject.txt");
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(toWriteSortedAsObject));
+        } catch (IOException e) {
+        }
+        try {
+            oos.writeObject(this.languages);
+            oos.close();
+        } catch (Exception e) {
+        }
+
 
     }
 

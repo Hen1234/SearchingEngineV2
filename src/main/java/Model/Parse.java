@@ -29,7 +29,7 @@ public class Parse {
     private HashSet<String> Languages;
     //HashSet of cities
     private HashMap<String, City> cities;
-    static HashMap<String,HashSet<String>> termsInHeaderToDoc; // key - header term, value - list of docs;
+    static HashMap<String, HashSet<String>> termsInHeaderToDoc; // key - header term, value - list of docs;
 
     // Hashmap that hold as key - city name and as object the rqual city object
     public HashMap<String, City> getCities() {
@@ -40,7 +40,7 @@ public class Parse {
      * Constructor- initialize the fields and call the initial methods
      */
     public Parse() {
-        termsInHeaderToDoc = new HashMap<String,HashSet<String>>();
+        termsInHeaderToDoc = new HashMap<String, HashSet<String>>();
         replacements = new HashMap<String, String>();
         stemmer = new Stemmer();
         stopWords = new HashSet<String>();
@@ -116,12 +116,12 @@ public class Parse {
         setToStem(toStem);
         String[] text = t.split(" ");
         for (int i = 0; i < text.length; i++) {
-            if (isStopWord(text[i]))
+            if (isStopWord(text[i]) || text[i].length() == 0 || text[i].equals("") || text[i].equals(" "))
                 continue;
 
-            if (text[i].contains("-")){
+            /*if (text[i].contains("-")) {
                 System.out.println("");
-            }
+            }*/
 
             if (text[i].length() > 0 && (text[i].charAt(0) == '/' || text[i].charAt(0) == '|'
                     || text[i].charAt(0) == '-' || text[i].charAt(0) == '\''
@@ -132,6 +132,14 @@ public class Parse {
                     text[i] = noDashes;
                 } else
                     continue;
+            }
+
+            if (isStopWord(text[i]) || text[i].length() == 0 || text[i].equals("") || text[i].equals(" ") || text[i] == null)
+                continue;
+            else {
+                if (text[i].charAt(0) == ' ') {
+                    text[i] = text[i].substring(1, text[i].length() - 1);
+                }
             }
 
             // between 18 and 24
@@ -158,14 +166,14 @@ public class Parse {
 
                     }
                     else {*/
-                        termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
-                        termsOfQuery.append(text[i + 1] + "-" + text[i + 3] + " ");
-                        termsOfQuery.append(text[i + 1] + " ");
-                        termsOfQuery.append(text[i + 3] + " ");
-                        termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
-                        termsOfHeader.append(text[i + 1] + "-" + text[i + 3] + " ");
-                        termsOfHeader.append(text[i + 1] + " ");
-                        termsOfHeader.append(text[i + 3] + " ");
+                    termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
+                    termsOfQuery.append(text[i + 1] + "-" + text[i + 3] + " ");
+                    termsOfQuery.append(text[i + 1] + " ");
+                    termsOfQuery.append(text[i + 3] + " ");
+                    termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " " + text[i + 3] + " ");
+                    termsOfHeader.append(text[i + 1] + "-" + text[i + 3] + " ");
+                    termsOfHeader.append(text[i + 1] + " ");
+                    termsOfHeader.append(text[i + 3] + " ");
 
                     /*}*/
 
@@ -202,8 +210,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(usDollarsConvert(text[i], text[i + 1])+" "));
                             termsOfHeader.append(stemmer.stemming(usDollarsConvert(text[i], text[i + 1])+" "));
                         }else {*/
-                            termsOfQuery.append(usDollarsConvert(text[i], text[i + 1]) + " ");
-                            termsOfHeader.append(usDollarsConvert(text[i], text[i + 1]) + " ");
+                        termsOfQuery.append(usDollarsConvert(text[i], text[i + 1]) + " ");
+                        termsOfHeader.append(usDollarsConvert(text[i], text[i + 1]) + " ");
                         /*}*/
                     }
                     i = i + 3;
@@ -222,8 +230,8 @@ public class Parse {
                                 termsOfHeader.append(stemmer.stemming(text[i] + "000" + " M Dollars "));
                             }
                                 else*/
-                                    termsOfQuery.append(text[i] + "000" + " M Dollars ");
-                                    termsOfHeader.append(text[i] + "000" + " M Dollars ");
+                            termsOfQuery.append(text[i] + "000" + " M Dollars ");
+                            termsOfHeader.append(text[i] + "000" + " M Dollars ");
                         }
 
                         //terms.add(doc.getText().get(i) + "000" + " M Dollars");
@@ -242,8 +250,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + " M Dollars "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + " M Dollars "));
                             }else {*/
-                                termsOfQuery.append(text[i] + " M Dollars ");
-                                termsOfHeader.append(text[i] + " M Dollars ");
+                            termsOfQuery.append(text[i] + " M Dollars ");
+                            termsOfHeader.append(text[i] + " M Dollars ");
                             /*}*/
                         }
 
@@ -264,8 +272,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i] + " " + text[i + 1] + " " + text[i + 2]+" "));
                             termsOfHeader.append(stemmer.stemming(text[i] + " " + text[i + 1] + " " + text[i + 2]+" "));
                         }else {*/
-                            termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " ");
-                            termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " ");
+                        termsOfQuery.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " ");
+                        termsOfHeader.append(text[i] + " " + text[i + 1] + " " + text[i + 2] + " ");
                         /*}*/
                     }
 
@@ -289,8 +297,8 @@ public class Parse {
                                     termsOfQuery.append(stemmer.stemming(j + " M Dollars "));
                                     termsOfHeader.append(stemmer.stemming(j + " M Dollars "));
                                 }else*/
-                                    termsOfQuery.append(j + " M Dollars ");
-                                    termsOfHeader.append(j + " M Dollars ");
+                                termsOfQuery.append(j + " M Dollars ");
+                                termsOfHeader.append(j + " M Dollars ");
                             }
 
                             i = i + 1;
@@ -305,11 +313,11 @@ public class Parse {
                                     termsOfQuery.append(stemmer.stemming(Double.toString(tmp) + " M Dollars "));
                                     termsOfHeader.append(stemmer.stemming(Double.toString(tmp) + " M Dollars "));
                                 } else {*/
-                                    termsOfQuery.append(Double.toString(tmp) + " M Dollars ");
-                                    termsOfHeader.append(Double.toString(tmp) + " M Dollars ");
+                                termsOfQuery.append(Double.toString(tmp) + " M Dollars ");
+                                termsOfHeader.append(Double.toString(tmp) + " M Dollars ");
                                 /*}*/
+                            } catch (Exception e) {
                             }
-                                catch (Exception e){}
                         }
 
                         i = i + 1;
@@ -323,8 +331,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + " Dollars "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + " Dollars "));
                             }else {*/
-                                termsOfQuery.append(text[i] + " Dollars ");
-                                termsOfHeader.append(text[i] + " Dollars ");
+                            termsOfQuery.append(text[i] + " Dollars ");
+                            termsOfHeader.append(text[i] + " Dollars ");
                             /*}*/
                         }
 
@@ -346,8 +354,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(months.get(text[i + 1]) + "-0" + text[i]+" "));
                             termsOfHeader.append(stemmer.stemming(months.get(text[i + 1]) + "-0" + text[i]+" "));
                         }else {*/
-                            termsOfQuery.append(months.get(text[i + 1]) + "-0" + text[i] + " ");
-                            termsOfHeader.append(months.get(text[i + 1]) + "-0" + text[i] + " ");
+                        termsOfQuery.append(months.get(text[i + 1]) + "-0" + text[i] + " ");
+                        termsOfHeader.append(months.get(text[i + 1]) + "-0" + text[i] + " ");
                         /*}*/
                     }
 
@@ -368,8 +376,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + "M "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + "M "));
                             }else {*/
-                                termsOfQuery.append(text[i] + "M ");
-                                termsOfHeader.append(text[i] + "M ");
+                            termsOfQuery.append(text[i] + "M ");
+                            termsOfHeader.append(text[i] + "M ");
                             /*}*/
                         }
 
@@ -388,8 +396,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + "B "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + "B "));
                             }else {*/
-                                termsOfQuery.append(text[i] + "B ");
-                                termsOfHeader.append(text[i] + "B ");
+                            termsOfQuery.append(text[i] + "B ");
+                            termsOfHeader.append(text[i] + "B ");
                             /*}*/
                         }
 
@@ -408,8 +416,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + "00B "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + "00B "));
                             }else {*/
-                                termsOfQuery.append(text[i] + "00B ");
-                                termsOfHeader.append(text[i] + "00B ");
+                            termsOfQuery.append(text[i] + "00B ");
+                            termsOfHeader.append(text[i] + "00B ");
                             /*}*/
                         }
 
@@ -428,8 +436,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(text[i] + "K "));
                                 termsOfHeader.append(stemmer.stemming(text[i] + "K "));
                             }else {*/
-                                termsOfQuery.append(text[i] + "K ");
-                                termsOfHeader.append(text[i] + "K ");
+                            termsOfQuery.append(text[i] + "K ");
+                            termsOfHeader.append(text[i] + "K ");
                             /*}*/
                         }
 
@@ -448,8 +456,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i]+" "));
                             termsOfHeader.append(stemmer.stemming(text[i]+" "));
                         }else {*/
-                            termsOfQuery.append(text[i] + " ");
-                            termsOfHeader.append(text[i] + " ");
+                        termsOfQuery.append(text[i] + " ");
+                        termsOfHeader.append(text[i] + " ");
                         /*}*/
                     }
 
@@ -466,8 +474,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i] + "% "));
                             termsOfHeader.append(stemmer.stemming(text[i] + "% "));
                         }else {*/
-                            termsOfQuery.append(text[i] + "% ");
-                            termsOfHeader.append(text[i] + "% ");
+                        termsOfQuery.append(text[i] + "% ");
+                        termsOfHeader.append(text[i] + "% ");
                         /*}*/
                     }
 
@@ -488,8 +496,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(num.toString() + "K "));
                             termsOfHeader.append(stemmer.stemming(num.toString() + "K "));
                         }else {*/
-                            termsOfQuery.append(num.toString() + "K ");
-                            termsOfHeader.append(num.toString() + "K ");
+                        termsOfQuery.append(num.toString() + "K ");
+                        termsOfHeader.append(num.toString() + "K ");
                         /*}*/
                     }
 
@@ -505,8 +513,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(num.toString() + "M "));
                             termsOfHeader.append(stemmer.stemming(num.toString() + "M "));
                         }else {*/
-                            termsOfQuery.append(num.toString() + "M ");
-                            termsOfHeader.append(num.toString() + "M ");
+                        termsOfQuery.append(num.toString() + "M ");
+                        termsOfHeader.append(num.toString() + "M ");
                         /*}*/
                     }
 
@@ -522,8 +530,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(num.toString() + "B "));
                             termsOfHeader.append(stemmer.stemming(num.toString() + "B "));
                         }else {*/
-                            termsOfQuery.append(num.toString() + "B ");
-                            termsOfHeader.append(num.toString() + "B ");
+                        termsOfQuery.append(num.toString() + "B ");
+                        termsOfHeader.append(num.toString() + "B ");
                         /*}*/
                     }
 
@@ -547,8 +555,8 @@ public class Parse {
                                 termsOfHeader.append(stemmer.stemming(months.get(text[i]) + "-0" + text[i + 1]+" "));
                             }
                             else {*/
-                                termsOfQuery.append(months.get(text[i]) + "-0" + text[i + 1] + " ");
-                                termsOfHeader.append(months.get(text[i]) + "-0" + text[i + 1] + " ");
+                            termsOfQuery.append(months.get(text[i]) + "-0" + text[i + 1] + " ");
+                            termsOfHeader.append(months.get(text[i]) + "-0" + text[i + 1] + " ");
                            /* }*/
                         }
 
@@ -571,8 +579,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i + 1] + "-" + months.get(text[i])+" "));
                             termsOfHeader.append(stemmer.stemming(text[i + 1] + "-" + months.get(text[i])+" "));
                         }else {*/
-                            termsOfQuery.append(text[i + 1] + "-" + months.get(text[i]) + " ");
-                            termsOfHeader.append(text[i + 1] + "-" + months.get(text[i]) + " ");
+                        termsOfQuery.append(text[i + 1] + "-" + months.get(text[i]) + " ");
+                        termsOfHeader.append(text[i + 1] + "-" + months.get(text[i]) + " ");
                         /*}*/
                     }
 
@@ -597,8 +605,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i].substring(1, (text[i]).length()) + "000 M Dollars "));
                             termsOfHeader.append(stemmer.stemming(text[i].substring(1, (text[i]).length()) + "000 M Dollars "));
                         }else {*/
-                            termsOfQuery.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
-                            termsOfHeader.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
+                        termsOfQuery.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
+                        termsOfHeader.append(text[i].substring(1, (text[i]).length()) + "000 M Dollars ");
                         /*}*/
                     }
 
@@ -617,8 +625,8 @@ public class Parse {
                             termsOfHeader.append(stemmer.stemming(text[i].substring(1, (text[i].length())) + " M Dollars "));
 
                         }else {*/
-                            termsOfQuery.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
-                            termsOfHeader.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
+                        termsOfQuery.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
+                        termsOfHeader.append(text[i].substring(1, (text[i].length())) + " M Dollars ");
                         /*}*/
                     }
 
@@ -639,8 +647,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(theNumber + " Dollars "));
                             termsOfHeader.append(stemmer.stemming(theNumber + " Dollars "));
                         }else {*/
-                            termsOfQuery.append(theNumber + " Dollars ");
-                            termsOfHeader.append(theNumber + " Dollars ");
+                        termsOfQuery.append(theNumber + " Dollars ");
+                        termsOfHeader.append(theNumber + " Dollars ");
                         /*}*/
                     }
 
@@ -657,8 +665,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(j + " M Dollars "));
                                 termsOfHeader.append(stemmer.stemming(j + " M Dollars "));
                             }else {*/
-                                termsOfQuery.append(j + " M Dollars ");
-                                termsOfHeader.append(j + " M Dollars ");
+                            termsOfQuery.append(j + " M Dollars ");
+                            termsOfHeader.append(j + " M Dollars ");
                             /*}*/
                         }
 
@@ -672,8 +680,8 @@ public class Parse {
                                 termsOfQuery.append(stemmer.stemming(theNum.toString() + " M Dollars "));
                                 termsOfHeader.append(stemmer.stemming(theNum.toString() + " M Dollars "));
                             }else {*/
-                                termsOfQuery.append(theNum.toString() + " M Dollars ");
-                                termsOfHeader.append(theNum.toString() + " M Dollars ");
+                            termsOfQuery.append(theNum.toString() + " M Dollars ");
+                            termsOfHeader.append(theNum.toString() + " M Dollars ");
                             /*}*/
                         }
 
@@ -694,8 +702,8 @@ public class Parse {
                             termsOfQuery.append(stemmer.stemming(text[i] + " " + text[i + 1]+" "));
                             termsOfHeader.append(stemmer.stemming(text[i] + " " + text[i + 1]+" "));
                         }else {*/
-                            termsOfQuery.append(text[i] + " " + text[i + 1] + " ");
-                            termsOfHeader.append(text[i] + " " + text[i + 1] + " ");
+                        termsOfQuery.append(text[i] + " " + text[i + 1] + " ");
+                        termsOfHeader.append(text[i] + " " + text[i + 1] + " ");
                         /*}*/
                     }
 
@@ -707,84 +715,89 @@ public class Parse {
 
             if (!isQuery && !isHeader) {
                 if (isContainSlash(text[i])) {
-                    System.out.println(text[i]);
-                    int contWords =0;
                     String ans1 = "";
                     for (int x = 0; x < text[i].length(); x++) {
                         if (text[i].charAt(x) != '-' && text[i].charAt(x) != '/' && text[i].charAt(x) != '|') {
                             ans1 = ans1 + text[i].charAt(x);
                         } else {
-                            if (ans1.length() >0) {
-                                System.out.println("fixed: "+ans1);
-                                addTheDictionary(ans1, doc, i + contWords);
-                                contWords++;
+                            if (ans1.length() > 0) {
+                                addTheDictionary(ans1, doc, i /*+ contWords*/);
                                 ans1 = "";
                             }
                         }
                     }
-                    if (ans1.length() > 0){
-                        System.out.println("fixed: "+ans1);
-                        addTheDictionary(ans1, doc, i + contWords);
-                        contWords++;
+                    if (ans1.length() > 0) {
+                        addTheDictionary(ans1, doc, i /*+ contWords*/);
                         ans1 = "";
-                        contWords =0;
                     }
-                }
-                else {
+                } else {
                     addTheDictionary(text[i], doc, i);
                 }
-            }else{
-                /*if (toStem){
-                    termsOfQuery.append(stemmer.stemming(text[i]+" "));
-                    termsOfHeader.append(stemmer.stemming(text[i]+" "));
-                }else {*/
-                    termsOfQuery.append(text[i] + " ");
+            } else {
+                if(isQuery){
+                    if (isContainSlash(text[i])) {
+                        String ans1 = "";
+                        for (int x = 0; x < text[i].length(); x++) {
+                            if (text[i].charAt(x) != '-' && text[i].charAt(x) != '/' && text[i].charAt(x) != '|') {
+                                ans1 = ans1 + text[i].charAt(x);
+                            } else {
+                                if (ans1.length() > 0) {
+                                    termsOfQuery.append(ans1+" ");
+                                    ans1 = "";
+                                }
+                            }
+                        }
+                        if (ans1.length() > 0) {
+                            termsOfQuery.append(ans1+" ");
+                            System.out.println(termsOfQuery);
+                            ans1 = "";
+                        }
+                    }
+                    else{
+                        termsOfQuery.append(text[i] + " ");
+                    }
+                }
+                else
                     termsOfHeader.append(text[i] + " ");
                 /*}*/
             }
 
         } //for
-        if (isHeader){
+        if (isHeader) {
             String[] splitedHeader = termsOfHeader.toString().split(" ");
-            HashSet <String> relevantDocs;
+            HashSet<String> relevantDocs;
             for (int i = 0; i < splitedHeader.length; i++) {
-                if (splitedHeader[i].equals("Falklands") || splitedHeader[i].equals("Falkland") ||
-                        splitedHeader[i].equals("falkland") || splitedHeader[i].equals("FALKLAND")){
-                }
                 if (!ReadFile.toStem) {
                     String toSearch = splitedHeader[i].toLowerCase();
                     relevantDocs = termsInHeaderToDoc.get(toSearch);
 
-                }
-                else {
+                } else {
                     String toSearch = stemmer.stemming(splitedHeader[i].toLowerCase());
                     relevantDocs = termsInHeaderToDoc.get(toSearch);
                 }
 
-                if (relevantDocs!=null){
+                if (relevantDocs != null) {
                     if (relevantDocs.contains(doc.getDocNo()))
                         continue;
                     else
                         relevantDocs.add(doc.getDocNo());
-                }
-                else{
+                } else {
                     HashSet<String> temp = new HashSet<>();
                     temp.add(doc.getDocNo());
 
                     if (!ReadFile.toStem) {
                         String name = splitedHeader[i].toLowerCase();
                         termsInHeaderToDoc.put(name, temp);
-                    }
-                    else {
+                    } else {
                         String name = stemmer.stemming(splitedHeader[i].toLowerCase());
                         termsInHeaderToDoc.put(name, temp);
                     }
                 }
             }
         }
-        if(isQuery){
+        if (isQuery) {
             return termsOfQuery.toString();
-        }else{
+        } else {
             if (isHeader)
                 return termsOfHeader.toString().toLowerCase();
             else

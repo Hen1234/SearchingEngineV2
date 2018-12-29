@@ -41,6 +41,7 @@ public class Controller implements Initializable {
     public HashMap<String, Docs> Documents;
     public ArrayList<String> DicToShow;
     HashMap<String, City> CitiesHashMap;
+    HashSet<String>LanguagesHashSet;
     //public Stage stage;
     @FXML
     public boolean corpusPathIsNull;
@@ -133,7 +134,6 @@ public class Controller implements Initializable {
             }*/
             //init the Languages
             HashSet<String> languages = reader.getLanguages();
-            Iterator it = languages.iterator();
             Languages.setItems(FXCollections.observableArrayList(languages));
             Languages.setDisable(false);
 
@@ -346,11 +346,41 @@ public class Controller implements Initializable {
             return;
         }
 
+        try {
+            //loadLanguages();
+        } catch (Exception e) {
+            badPathAlert.show();
+            return;
+        }
+
+        //update the postPath
         reader.getIndexer().setPathDir(postpath);
+        //set Disable to the next buttons
+        reset.setDisable(false);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
         RunQueryFile.setDisable(false);
         LoadQueryFile.setDisable(false);
+
+    }
+
+    private void loadLanguages() throws IOException, ClassNotFoundException {
+
+        String postpath = pathFromUser;
+        //String postpath = reader.getPostingPath();
+        FileInputStream f = null;
+        f = new FileInputStream(new File(postpath + "\\" + "LanguagesAsObject.txt"));
+        ObjectInputStream o = new ObjectInputStream(f);
+        LanguagesHashSet = (HashSet<String>) o.readObject();
+        reader.setLanguages(LanguagesHashSet);
+        o.close();
+
+        //init the Languages
+        Languages.setItems(FXCollections.observableArrayList(LanguagesHashSet));
+        Languages.setDisable(false);
+
+
+
 
     }
 
@@ -368,6 +398,12 @@ public class Controller implements Initializable {
         CitiesHashMap = ((HashMap<String, City>) out);
         //searcher.setDocuments(Documents);
         reader.setCities(CitiesHashMap);
+
+        //init the cities
+        Cities.getItems().addAll(citiesObservableList(CitiesHashMap));
+        Cities.setDisable(false);
+
+
 
 
     }
@@ -419,8 +455,8 @@ public class Controller implements Initializable {
     public void queriesPath(ActionEvent event) throws IOException {
 
         Stage stage = new Stage();
-        DirectoryChooser dir = new DirectoryChooser();
-        File queriesFromUser = dir.showDialog(stage);
+        FileChooser dir = new FileChooser();
+        File queriesFromUser = dir.showOpenDialog(stage);
         if (queriesFromUser != null) {
             //pathFromUser = corpusFromUser.getPath();
             //reader.setCorpusPath(corpusFromUser.getPath());
@@ -444,6 +480,26 @@ public class Controller implements Initializable {
                 return;
             }
         }
+
+        //new stage for the list of the ranked doc
+        Stage stage = new Stage();
+        stage.setTitle("Results");
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ShowQueryiesResultsForFile.fxml"));
+        Scene scene = new Scene(root, 500, 400);
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.show();
+
+        //init the docs for show entities
+        ArrayList<String> QueryResultsListForFile = searcher.getQueryResultsForFile();
+        ObservableList<String> QueryResultsListForFileObser = FXCollections.observableArrayList();
+
+        for (String key : QueryResultsListForFile) {
+            QueryResultsListForFileObser.add(key);
+        }
+
+        RelevantDocs.setItems(QueryResultsListForFileObser);
+        searcher.setQueryResultsForFile(new ArrayList<String>());
     }
 
     public void FilterByCity(ActionEvent event) {

@@ -17,11 +17,13 @@ public class Searcher {
     boolean isSemantic;
 
     HashMap<String, String> codesAndQueries;
+    private TreeMap<String, ArrayList<String>> QueryIDandResultsForFile;  //TreeMap: key->queryID, value->queryResults
     public TreeMap<String, String> Dictionary;
     public HashMap<String, Docs> Documents;
     static HashMap<String, QueryDoc> docRelevantForTheQuery;
     PriorityQueue<QueryDoc> RankedQueryDocs;
     private ArrayList<String> QueryResults;
+    private ArrayList<String> QueryResultsForFile;
     HashSet<String> citiesFromFilter; //hashSet for cities if the user chose filter by city
     static double avdl;
     static int numOfDocumentsInCorpus;
@@ -31,6 +33,8 @@ public class Searcher {
 
         docRelevantForTheQuery = new HashMap<String, QueryDoc>();
         QueryResults = new ArrayList<>();
+        QueryIDandResultsForFile = new TreeMap<>();
+        QueryResultsForFile = new ArrayList<>();
         RankedQueryDocs = new PriorityQueue();
         ranker = new Ranker();
         //numOfDocumentsInCorpus = Documents.size();
@@ -38,6 +42,22 @@ public class Searcher {
         Documents = Indexer.docsHashMap;
         Dictionary = Indexer.sorted;
 
+    }
+
+    public TreeMap<String, ArrayList<String>> getQueryIDandResultsForFile() {
+        return QueryIDandResultsForFile;
+    }
+
+    public void setQueryIDandResultsForFile(TreeMap<String, ArrayList<String>> queryIDandResultsForFile) {
+        QueryIDandResultsForFile = queryIDandResultsForFile;
+    }
+
+    public ArrayList<String> getQueryResultsForFile() {
+        return QueryResultsForFile;
+    }
+
+    public void setQueryResultsForFile(ArrayList<String> queryResultsForFile) {
+        QueryResultsForFile = queryResultsForFile;
     }
 
     public void setQuery(String query) {
@@ -185,7 +205,6 @@ public class Searcher {
         return QueryResults;
 
 
-
     }
 
     private void sendToRanker() throws IOException {
@@ -322,13 +341,13 @@ public class Searcher {
                     }
                 }
 
-                for (int j = lineFromFile.length()-1; j < lineFromFile.length(); j--) {
+                for (int j = lineFromFile.length() - 1; j < lineFromFile.length(); j--) {
                     if (lineFromFile.charAt(j) == 'D' && j + 5 < lineFromFile.length() &&
                             lineFromFile.charAt(j + 1) == 'F' && lineFromFile.charAt(j + 2) == '-' &&
                             lineFromFile.charAt(j + 3) == ' ') {
                         String df = "";
-                        j=j+4;
-                        while (lineFromFile.charAt(j)!=' ') {
+                        j = j + 4;
+                        while (lineFromFile.charAt(j) != ' ') {
                             df = df + lineFromFile.charAt(j);
                             j++;
                         }
@@ -351,7 +370,7 @@ public class Searcher {
                     currentQueryTerm.setAppearanceInQuery(currentQueryTerm.getAppearanceInQuery() + 1);
                 }
             }
-        }else{ // query term not in dictionary (null)
+        } else { // query term not in dictionary (null)
             return new QueryTerm(StringcurretTermOfQuery);
         }
 
@@ -429,7 +448,7 @@ public class Searcher {
         HashMap<String, String> ans = new HashMap<>();
         String queryNum = "";
         String query = "";
-        FileInputStream f = new FileInputStream(new File(path + "\\queries.txt"));
+        FileInputStream f = new FileInputStream(new File(path));// + "\\queries.txt"));
         InputStreamReader isr = new InputStreamReader(f);
         BufferedReader br = new BufferedReader(isr);
         //searcher.setDictionary(Dictionary);
@@ -500,29 +519,36 @@ public class Searcher {
         codesAndQueries = ans;
 
         Iterator it = codesAndQueries.entrySet().iterator();
-        TreeMap<String, ArrayList<String>> forWriting = new TreeMap<>();
+        //init thre TreeMap of queriesResults
+        QueryIDandResultsForFile = new TreeMap<>();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             String key = (String) pair.getKey();
             String queryString = (String) pair.getValue();
             ArrayList<String> temp = pasreQuery(queryString);
-            forWriting.put(key,temp);
-            QueryResults = new ArrayList<>();
+
+            //add the queryResults to the queryResultsForFile
+            for (int i = 0; i < temp.size(); i++) {
+                QueryResultsForFile.add(temp.get(i));
             }
+
+            QueryIDandResultsForFile.put(key, temp);
+            QueryResults = new ArrayList<>();
+        }
 
         File res = new File(ReadFile.postingPath + "\\" + "result.txt");
         FileOutputStream fos = new FileOutputStream(res.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);
         StringBuilder s = new StringBuilder("");
-        Iterator iter = forWriting.entrySet().iterator();
+        Iterator iter = QueryIDandResultsForFile.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry pair = (Map.Entry) iter.next();
             String key = (String) pair.getKey();
             ArrayList<String> queryString = (ArrayList<String>) pair.getValue();
             //ArrayList<String> temp = pasreQuery(queryString);
-            for (int i = 0; i <queryString.size() ; i++) {
-                s.append(key+" 0 " + queryString.get(i) + " " + " 1 42.38 mt" + System.lineSeparator());
+            for (int i = 0; i < queryString.size(); i++) {
+                s.append(key + " 0 " + queryString.get(i) + " " + " 1 42.38 mt" + System.lineSeparator());
                 /*bw.write(s);
                 bw.flush();*/
             }

@@ -395,6 +395,9 @@ public class Indexer {
 
         while (!mergeQueue.isEmpty()) {
             curTerm = mergeQueue.poll();
+            /*if (firstWordInLine(curTerm.getKey()).equals("british") ||firstWordInLine(curTerm.getKey()).equals("BRITISH") || firstWordInLine(curTerm.getKey()).equals("British")){
+                System.out.println(" ");
+            }*/
             String curTermKey = curTerm.getKey();
             countDequeues++;
             fileToPoll = curTerm.getValue(); // file number to insert from into the queue
@@ -437,13 +440,26 @@ public class Indexer {
                 if (Character.isUpperCase(curTerm.getKey().charAt(0))) { // upper case
                     // upper case appear in dictionary as lower case
                     if (Dictionary.containsKey(firstWordInLine(curTerm.getKey().toLowerCase()))) {
+                        Integer tempDF = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toLowerCase()).getKey();
+                        Integer tempTIC = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toLowerCase()).getValue();
+                        Integer UpTempDF = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toUpperCase()).getKey();
+                        Integer UpTempTIC = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toUpperCase()).getValue();
+                        dfAndTotal.put(firstWordInLine(curTerm.getKey()).toLowerCase(),new Pair<>(tempDF + UpTempDF,tempTIC +UpTempTIC));
                         Dictionary.remove(firstWordInLine(curTerm.getKey()).toUpperCase());
+/*
+                        System.out.println(firstWordInLine(curTerm.getKey()) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//
+*/
+
 
                         //System.out.println(firstWordInLine(curTerm.getKey()));
 
                         StringBuilder toInsertToBigLetterFile = new StringBuilder(firstWordInLine(curTerm.getKey()).toLowerCase() + "###" + restOfInLine(curTerm.getKey()));
                         while (firstWordInLine(mergeQueue.peek().getKey()).equals(firstWordInLine(curTerm.getKey()))) {
                             curTerm = mergeQueue.poll();
+                            /*if (firstWordInLine(curTerm.getKey()).equals("british") ||firstWordInLine(curTerm.getKey()).equals("BRITISH") || firstWordInLine(curTerm.getKey()).equals("British")){
+                                System.out.println(dfAndTotal.get(firstWordInLine(curTerm.getKey())) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//
+                                System.out.println(" ");
+                            }*/
                             countDequeues++;
                             fileToPoll = curTerm.getValue(); // file number to insert from into the queue
                             try {
@@ -492,13 +508,20 @@ public class Indexer {
                             }
                         }
                         continue;
-
                     }
+
+
                     lineToWriteToFinalFile.append(firstWordInLine(curTerm.getKey()) + " " + restOfInLine(curTerm.getKey()));
                     sorted.put(firstWordInLine(curTerm.getKey()).toUpperCase(), Integer.toString(toWriteidx) + "," + Integer.toString(lineIdx));
                     // not exist in dictionary - sequance of equals big letters
                     while (mergeQueue.size() > 0 && firstWordInLine(mergeQueue.peek().getKey()).equals(firstWordInLine(curTerm.getKey()))) {
                         curTerm = mergeQueue.poll();
+                        /*if (firstWordInLine(curTerm.getKey()).equals("british") ||firstWordInLine(curTerm.getKey()).equals("BRITISH") || firstWordInLine(curTerm.getKey()).equals("British")){
+                            System.out.println(" ");
+                            System.out.println(dfAndTotal.get(firstWordInLine(curTerm.getKey())) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//
+
+                        }*/
+
                         countDequeues++;
                         fileToPoll = curTerm.getValue(); // file number to insert from into the queue
                         try {
@@ -588,6 +611,10 @@ public class Indexer {
                     sorted.put(firstWordInLine(curTerm.getKey()).toLowerCase(), Integer.toString(toWriteidx) + "," + Integer.toString(lineIdx));
                     while (mergeQueue.size() > 0 && mergeQueue.size() > 0 && firstWordInLine(mergeQueue.peek().getKey()).equals(firstWordInLine(curTerm.getKey()))) {
                         curTerm = mergeQueue.poll(); // the equaled term
+                        /*if (firstWordInLine(curTerm.getKey()).equals("british") ||firstWordInLine(curTerm.getKey()).equals("BRITISH") || firstWordInLine(curTerm.getKey()).equals("British")){
+                            System.out.println(dfAndTotal.get(firstWordInLine(curTerm.getKey())) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//
+                            System.out.println(" ");
+                        }*/
                         countDequeues++;
 
                         lineToWriteToFinalFile.append(restOfInLine(curTerm.getKey()));
@@ -620,6 +647,9 @@ public class Indexer {
                     //lineToWriteToFinalFile.append("Total in Corpus: " + totalAndDf[0] + " Df: " + totalAndDf[1]);
                     try {
                         DicToShow.add(firstWordInLine(curTerm.getKey()) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//+" Total In Corpus:"+totalAndDf[0]);
+/*
+                        System.out.println(firstWordInLine(curTerm.getKey()) + " TIC: " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());//
+*/
                         lineToWriteToFinalFile.append("DF- " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getKey() + " TIC- " + dfAndTotal.get(firstWordInLine(curTerm.getKey())).getValue());
                         lineToWriteToFinalFile.append(System.lineSeparator());
                     } catch (Exception e) {
@@ -674,6 +704,11 @@ public class Indexer {
                 if (Character.isUpperCase(curTerm.getKey().charAt(0))) { // upper case term
                     // not sequance of big letters but appear in dictionary
                     if (Dictionary.containsKey(firstWordInLine(curTerm.getKey().toLowerCase()))) { // exist in dic
+                        Integer tempDF = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toLowerCase()).getKey();
+                        Integer tempTIC = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toLowerCase()).getValue();
+                        Integer UpTempDF = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toUpperCase()).getKey();
+                        Integer UpTempTIC = dfAndTotal.get(firstWordInLine(curTerm.getKey()).toUpperCase()).getValue();
+                        dfAndTotal.put(firstWordInLine(curTerm.getKey()).toLowerCase(),new Pair<>(tempDF + UpTempDF,tempTIC +UpTempTIC));
                         Dictionary.remove(firstWordInLine(curTerm.getKey()).toUpperCase());
                         StringBuilder toInsertToBigLetterFile = new StringBuilder(firstWordInLine(curTerm.getKey()).toLowerCase() + "###" + restOfInLine(curTerm.getKey() + System.lineSeparator()));
                         try {
