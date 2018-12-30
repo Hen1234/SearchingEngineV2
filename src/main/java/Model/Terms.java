@@ -12,7 +12,6 @@ import java.util.Map;
  */
 public class Terms implements Comparable<Terms> {
     HashMap<Docs,Pair<Integer, StringBuilder>> docsAndAmount;  //doc->amount, locations
-    StringBuilder docsAndAm;
     String value;
     int df; // number of documents the term appears
     int totalInCorpus;

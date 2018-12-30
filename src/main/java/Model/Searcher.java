@@ -27,6 +27,7 @@ public class Searcher {
     HashSet<String> citiesFromFilter; //hashSet for cities if the user chose filter by city
     static double avdl;
     static int numOfDocumentsInCorpus;
+    String resultPath;
 
 
     public Searcher() {
@@ -42,6 +43,10 @@ public class Searcher {
         Documents = Indexer.docsHashMap;
         Dictionary = Indexer.sorted;
 
+    }
+
+    public void setResultPath(String resultPath) {
+        this.resultPath = resultPath;
     }
 
     public TreeMap<String, ArrayList<String>> getQueryIDandResultsForFile() {
@@ -98,6 +103,12 @@ public class Searcher {
         QueryResults = queryResults;
     }
 
+    /**
+     *
+     * @param query
+     * @return
+     * @throws IOException
+     */
     public ArrayList<String> pasreQuery(String query) throws IOException {
         System.out.println("Query: " + query);
         //init the Documents and Dictionary HashMap from the index
@@ -113,18 +124,55 @@ public class Searcher {
         if (isSemantic) getSemanticSynonym();
         splitedQueryAfterParse = queryAfterParse.split(" ");
 
+        //check dash
+        for (int k = 0; k < splitedQueryAfterParse.length; k++) {
 
-        for (int i = 0; i < splitedQueryAfterParse.length; i++) {
-            String curretTermOfQuery = splitedQueryAfterParse[i];
+            if(isContainDash(splitedQueryAfterParse[k])){
+
+                String beforeDash="";
+                String afterDash="";
+
+                int i = 0;
+                for (i = 0; i <splitedQueryAfterParse[k].length() ; i++) {
+                    if(!(splitedQueryAfterParse[k].charAt(i)=='-')){
+                        beforeDash = beforeDash+splitedQueryAfterParse[k].charAt(i);
+
+                    }else{
+                        break;
+                    }
+
+                }
+                for (int j=i+1; j <splitedQueryAfterParse[k].length() ; j++) {
+                    afterDash = afterDash+splitedQueryAfterParse[k].charAt(j);
+
+                }
+
+                try{
+                    String[] newSplitedQueryAfterParse= new String[splitedQueryAfterParse.length+2];
+
+                    int j = 0;
+                    for (j = 0; j <splitedQueryAfterParse.length ; j++) {
+                        newSplitedQueryAfterParse[j]= splitedQueryAfterParse[j];
+
+                    }
+                    newSplitedQueryAfterParse[j]= beforeDash;
+                    newSplitedQueryAfterParse[j+1]= afterDash;
+                    splitedQueryAfterParse = newSplitedQueryAfterParse;
+                }catch (Exception e){}
+
+
+
+            }
+            String curretTermOfQuery = splitedQueryAfterParse[k];
 
             //if the word is a synonym
-            if (isSemantic && i > queryAfterParseLengthBeforeAddSynonym) {
+            if (isSemantic && k > queryAfterParseLengthBeforeAddSynonym) {
                 QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, true);
                 addDocsRelevantFromHeaders(current);
 
             } else {
                 QueryTerm current = initQueryTermAndQueryDocs(curretTermOfQuery, false);
-                if (i == 0) current.setFirstWordInQuery(true);
+                if (k == 0) current.setFirstWordInQuery(true);
                 addDocsRelevantFromHeaders(current);
 
             }
@@ -598,7 +646,7 @@ public class Searcher {
         }
 
         //File res = new File(ReadFile.postingPath + "\\" + "result.txt");
-        File res = new File("C:\\Users\\osherhe\\Downloads\\trec_eval" + "\\result.txt");
+        File res = new File(resultPath + "\\result.txt");
         FileOutputStream fos = new FileOutputStream(res.getPath());
         OutputStreamWriter osr = new OutputStreamWriter(fos);
         BufferedWriter bw = new BufferedWriter(osr);
@@ -623,5 +671,12 @@ public class Searcher {
         bw.close();
 
         return codesAndQueries;
+    }
+
+    // is the given string contain '-'
+    private boolean isContainDash(String str) {
+        for (int i = 0; i < str.length(); i++)
+            if (str.charAt(i) == '-') return true;
+        return false;
     }
 }

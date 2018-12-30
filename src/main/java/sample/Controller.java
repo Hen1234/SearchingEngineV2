@@ -52,7 +52,9 @@ public class Controller implements Initializable {
     public Button LoadDictionary;
     public Button LoadQueryFile;
     public Button RunQuery;
+    public Button ChooseResultPath;
     public Button RunQueryFile;
+    public TextField txt_fiedResultPath;
     public TextField txt_fiedCorpus;
     public TextField txt_fiedPosting;
     public TextField txt_fiedQueries;
@@ -71,6 +73,7 @@ public class Controller implements Initializable {
     public String SecondPath;
     public String quertPathFromUser;
     public String pathFromUser;
+    public String resultPath;
 
 
     @Override
@@ -97,6 +100,7 @@ public class Controller implements Initializable {
         LoadQueryFile.setDisable(true);
         LoadDictionary.setDisable(true);
         Run.setDisable(true);
+        ChooseResultPath.setDisable(true);
 
 
     }
@@ -139,7 +143,7 @@ public class Controller implements Initializable {
             reset.setDisable(false);
             ShowDictionary.setDisable(false);
             LoadDictionary.setDisable(false);
-
+            ChooseResultPath.setDisable(false);
             //init the cities
             HashMap<String, City> cities = reader.getCities();
             Cities.getItems().addAll(citiesObservableList(cities));
@@ -186,6 +190,21 @@ public class Controller implements Initializable {
         alert.show();
     }
 
+    private boolean askToDelete() {
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("let it go let it go, can't hold it back anymore");
+        alert.setContentText("Are you sure you want to delete all Stracures from memory?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * The method is called while the user enters the path of the corpus and the
      * stop words list.
@@ -230,6 +249,32 @@ public class Controller implements Initializable {
             }
         }
     }
+    public void resultPath() throws IOException {
+        Stage stage = new Stage();
+        DirectoryChooser dir = new DirectoryChooser();
+        File ResultPathFromUser = dir.showDialog(stage);
+        if (ResultPathFromUser != null) {
+            resultPath = ResultPathFromUser.getPath();
+            searcher.setResultPath(resultPath);
+            txt_fiedResultPath.setText(ResultPathFromUser.getPath());
+            postingPathIsNull = false;
+            if (!txt_fiedQueries.getText().equals(""))
+                RunQueryFile.setDisable(false);
+        }
+    }
+
+    public void queriesPath(ActionEvent event) throws IOException {
+
+        Stage stage = new Stage();
+        FileChooser dir = new FileChooser();
+        File queriesFromUser = dir.showOpenDialog(stage);
+        if (queriesFromUser != null) {
+            txt_fiedQueries.setText(queriesFromUser.getPath());
+            System.out.println(txt_fiedQueries);
+            if (!txt_fiedResultPath.getText().equals(""))
+                RunQueryFile.setDisable(false);
+        }
+    }
 
     /**
      * The method is called while the user marks the option of "Stemming".
@@ -253,19 +298,27 @@ public class Controller implements Initializable {
      * @throws IOException
      */
     public void reset(ActionEvent event) throws IOException {
+        if (!askToDelete()){
+            return;
+        }
         String pathToDelete = reader.getPostingPath();
         //FileUtils.cleanDirectory(new File(pathToDelete));
         try {
-            FileUtils.deleteDirectory(new File(FirstPath));
+            FileUtils.deleteDirectory(new File(reader.getPostingPath()));
         } catch (IOException e) {
         }
-        if (!SecondPath.equals(""))
-            try {
-                FileUtils.deleteDirectory(new File(SecondPath));
-            } catch (IOException e) {
-            }
         reader = new ReadFile();
-
+        Stemming.setSelected(false);
+        reset.setDisable(true);
+        ShowDictionary.setDisable(true);
+        quertPathFromUser = "";
+        FilterByCity.setSelected(false);
+        RunQuery.setDisable(true);
+        RunQueryFile.setDisable(true);
+        LoadQueryFile.setDisable(true);
+        //LoadDictionary.setDisable(true);
+        Run.setDisable(true);
+        ChooseResultPath.setDisable(true);
     }
 
     /**
@@ -290,8 +343,6 @@ public class Controller implements Initializable {
 
 
         } catch (Exception e) {   //////exception not found
-
-
         }
     }
 
@@ -360,7 +411,8 @@ public class Controller implements Initializable {
         reset.setDisable(false);
         ShowDictionary.setDisable(false);
         RunQuery.setDisable(false);
-        RunQueryFile.setDisable(false);
+        ChooseResultPath.setDisable(false);
+        //RunQueryFile.setDisable(false);
         LoadQueryFile.setDisable(false);
 
     }
@@ -453,20 +505,7 @@ public class Controller implements Initializable {
         reader.getP().setTermsInHeaderToDoc(temp);
     }
 
-    public void queriesPath(ActionEvent event) throws IOException {
 
-        Stage stage = new Stage();
-        FileChooser dir = new FileChooser();
-        File queriesFromUser = dir.showOpenDialog(stage);
-        if (queriesFromUser != null) {
-            //pathFromUser = corpusFromUser.getPath();
-            //reader.setCorpusPath(corpusFromUser.getPath());
-            txt_fiedQueries.setText(queriesFromUser.getPath());
-            System.out.println(txt_fiedQueries);
-            if (txt_fiedQueries.getText() != null)
-                RunQueryFile.setDisable(false);
-        }
-    }
 
     public void runQueriesPath(ActionEvent event) throws IOException {
         String queriesFromUser = txt_fiedQueries.getText();
@@ -537,6 +576,10 @@ public class Controller implements Initializable {
     public void getQueryFromUser() throws IOException {
 
         String query = txt_fiedInsertQuery.getText();
+        if (query==null || query.equals("") || query.equals(" ")){
+
+        }
+
         try {
             searcher.pasreQuery(query);
         } catch (Exception e) {
@@ -587,7 +630,7 @@ public class Controller implements Initializable {
             String entities =  "";
             for (int i = 0; i < choicesDoc.getMostFiveFrequencyEssences().size(); i++) {
                 TermsPerDoc current = choicesDoc.getMostFiveFrequencyEssences().poll();
-                entities = entities+ current.getValue()+" - "+current.getTf() + "\n";
+                entities = entities+ current.getValue()+" - "+current.getTf() + System.lineSeparator();
                 newDocQueue.add(current);
 
             }

@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="718.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
       <Button fx:id="Run" layoutX="469.0" layoutY="47.0" mnemonicParsing="false" onAction="#run" prefHeight="25.0" prefWidth="61.0" text="Run" />
       <Button fx:id="reset" layoutX="25.0" layoutY="150.0" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="84.0" text="Reset" />
@@ -22,19 +22,22 @@
       <TextField fx:id="txt_fiedCorpus" layoutX="172.0" layoutY="22.0" onAction="#corpusPath" />
       <CheckBox fx:id="Stemming" layoutX="353.0" layoutY="51.0" mnemonicParsing="false" onAction="#stemming" text="Stemming" />
       <ComboBox fx:id="Languages" layoutX="380.0" layoutY="111.0" prefWidth="150.0" promptText="Languages" />
-      <Button fx:id="LoadQueryFile" layoutX="22.0" layoutY="295.0" mnemonicParsing="false" onAction="#queriesPath" prefHeight="25.0" prefWidth="112.0" text="Load Queries File" />
+      <Button fx:id="LoadQueryFile" layoutX="5.0" layoutY="295.0" mnemonicParsing="false" onAction="#queriesPath" prefHeight="25.0" prefWidth="127.0" text="Load Queries File" />
       <TextField fx:id="txt_fiedInsertQuery" layoutX="127.0" layoutY="250.0" />
       <Button fx:id="RunQuery" layoutX="285.0" layoutY="250.0" mnemonicParsing="false" onAction="#getQueryFromUser" text="Run Query" />
-      <Button fx:id="RunQueryFile" layoutX="302.0" layoutY="295.0" mnemonicParsing="false" onAction="#runQueriesPath" text="Run Queries File" />
+      <Button fx:id="RunQueryFile" layoutX="6.0" layoutY="373.0" mnemonicParsing="false" onAction="#runQueriesPath" prefHeight="25.0" prefWidth="127.0" text="Run Queries File" />
+      <Button fx:id="ChooseResultPath" layoutX="4.0" layoutY="336.0" mnemonicParsing="false" onAction="#resultPath" prefHeight="25.0" prefWidth="127.0" text="Choose result path" />
+      <TextField fx:id="txt_fiedResultPath" layoutX="143.0" layoutY="334.0" prefHeight="25.0" prefWidth="142.0" />
 
       <Text layoutX="25.0" layoutY="267.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Insert Query" />
       <TextField fx:id="txt_fiedQueries" layoutX="142.0" layoutY="295.0" prefHeight="25.0" prefWidth="142.0" />
-      <CheckBox fx:id="FilterByCity" layoutX="25.0" layoutY="363.0" mnemonicParsing="false" onAction="#FilterByCity" text="Filter by City" />
-      <CheckBox fx:id="isSemantic" layoutX="25.0" layoutY="400.0" mnemonicParsing="false" onAction="#isSemantic" text="Add Semantic" />
-      <CheckComboBox fx:id="Cities" layoutX="134.0" layoutY="359.0" prefWidth="150.0" />
-      <ChoiceBox fx:id="RelevantDocs" layoutX="429.0" layoutY="295.0" onAction="#showEntities" prefWidth="150.0" />
-      <Label fx:id="labelEntities" layoutX="428.0" layoutY="324.0" prefHeight="74.0" prefWidth="149.0" />
-      <Label layoutX="408.0" layoutY="267.0" prefHeight="17.0" prefWidth="183.0" text="Show 5 Most Frequency Entities :" />
+      <CheckBox fx:id="FilterByCity" layoutX="21.0" layoutY="410.0" mnemonicParsing="false" onAction="#FilterByCity" text="Filter by City" />
+      <CheckBox fx:id="isSemantic" layoutX="21.0" layoutY="436.0" mnemonicParsing="false" onAction="#isSemantic" text="Add Semantic" />
+      <CheckComboBox fx:id="Cities" layoutX="127.0" layoutY="406.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="RelevantDocs" layoutX="430.0" layoutY="283.0" onAction="#showEntities" prefWidth="150.0" />
+      <Label fx:id="labelEntities" layoutX="431.0" layoutY="320.0" prefHeight="192.0" prefWidth="174.0" />
+      <Label layoutX="408.0" layoutY="250.0" prefHeight="25.0" prefWidth="183.0" text="Show 5 Most Frequency Entities :" />
+
 
    </children>
 </AnchorPane>

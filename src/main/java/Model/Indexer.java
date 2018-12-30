@@ -221,7 +221,17 @@ public class Indexer {
 
         //run the tempDic get from the parse
         while (iteratorDict.hasNext()) {
+
             Terms nextTerm = (Terms) iteratorDict.next();
+
+            //check for entities
+            if(Character.isUpperCase(nextTerm.getValue().charAt(0))){
+                if(nextTerm.getDocsAndAmount().get(currentDoc) != null){
+                    Integer tf = nextTerm.getDocsAndAmount().get(currentDoc).getKey();
+                    docPriorityQueue(tf,currentDoc.getDocNo(),nextTerm.getValue());
+                }
+
+            }
             if (dfAndTotal.containsKey(nextTerm.getValue())) {
                 dfAndTotal.put(nextTerm.getValue(), new Pair<Integer, Integer>((dfAndTotal.get(nextTerm.getValue()).getKey() + 1), dfAndTotal.get(nextTerm.getValue()).getValue() + nextTerm.getDocsAndAmount().get(currentDoc).getKey()));
             } else {
@@ -590,7 +600,7 @@ public class Indexer {
 
                     try {
                         if (Character.isUpperCase(firstWordInLine(curTermKey).charAt(0))) {
-                            insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
+                            //insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
                         }
                     } catch (Exception e) {
                     }
@@ -685,7 +695,7 @@ public class Indexer {
 
                     try {
                         if (Character.isUpperCase(firstWordInLine(curTermKey).charAt(0))) {
-                            insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
+                            //insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
                         }
                     } catch (Exception e) {
                     }
@@ -771,7 +781,7 @@ public class Indexer {
 
                     try {
                         if (Character.isUpperCase(firstWordInLine(curTermKey).charAt(0))) {
-                            insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
+                            //insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
                         }
 
                     } catch (Exception e) {
@@ -830,7 +840,7 @@ public class Indexer {
 
                     try {
                         if (Character.isUpperCase(firstWordInLine(curTermKey).charAt(0))) {
-                            insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
+                            //insertDocQueue(firstWordInLine(curTermKey), lineToWriteToFinalFile.toString());
                         }
                     } catch (Exception e) {
                     }
@@ -991,33 +1001,33 @@ public class Indexer {
         }
     }
 
-    private void insertDocQueue(String termValue, String line) {
-
-        //line = doc:FBIS3-1844#1=659 doc:
-        String docNo = "";
-        String tfString = "";
-        for (int i = 0; i < line.length(); i++) {
-
-            if (line.charAt(i) == ':') {
-                i++;
-                while (line.charAt(i) != '#') {
-                    docNo = docNo + line.charAt(i);
-                    i++;
-                }
-                i++;
-                while (line.charAt(i) != '=') {
-                    tfString = tfString + line.charAt(i);
-                    i++;
-                }
-
-                int tf = Integer.parseInt(tfString);
-                docPriorityQueue(tf, docNo, termValue);
-
-
-            }
-
-        }
-    }
+//    private void insertDocQueue(String termValue, String line) {
+//
+//        //line = doc:FBIS3-1844#1=659 doc:
+//        String docNo = "";
+//        String tfString = "";
+//        for (int i = 0; i < line.length(); i++) {
+//
+//            if (line.charAt(i) == ':') {
+//                i++;
+//                while (line.charAt(i) != '#') {
+//                    docNo = docNo + line.charAt(i);
+//                    i++;
+//                }
+//                i++;
+//                while (line.charAt(i) != '=') {
+//                    tfString = tfString + line.charAt(i);
+//                    i++;
+//                }
+//
+//                int tf = Integer.parseInt(tfString);
+//                docPriorityQueue(tf, docNo, termValue);
+//
+//
+//            }
+//
+//        }
+//    }
 
     //
     private void docPriorityQueue(int tf, String docNo, String termVlue) {

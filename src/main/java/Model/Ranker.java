@@ -47,6 +47,7 @@ public class Ranker {
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
         }
         currentQueryDoc.setRank(currentQueryDoc.getRank()*currentQueryDoc.getQueryTermsInDocsAndQuery().size());
+
         if(currentQueryDoc.isQueryContainEntitiy){
             currentQueryDoc.setRank(currentQueryDoc.getRank()*5);
         }
@@ -134,6 +135,10 @@ public class Ranker {
         if(currentQueryTerm.isSynonym() && currentQueryDoc.isContainsQueryTermInHeader() ) {
             return 0.6 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
         }
+
+//        if(currentQueryTerm.getAppearanceInQuery()>0){
+//            return 5 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
+//        }
 
 //        if(currentQueryDoc.isContainsQueryTermInHeader() && !currentQueryTerm.isSynonym())
 //            return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
