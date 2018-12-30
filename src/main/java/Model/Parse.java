@@ -123,6 +123,11 @@ public class Parse {
                 System.out.println("");
             }*/
 
+            //3 dots case
+           if(threeDotsCase(text[i], doc, i)){
+               continue;
+           }
+
             if (text[i].length() > 0 && (text[i].charAt(0) == '/' || text[i].charAt(0) == '|'
                     || text[i].charAt(0) == '-' || text[i].charAt(0) == '\''
                     || text[i].charAt(0) == '`' || text[i].charAt(0) == '/'
@@ -811,6 +816,35 @@ public class Parse {
                     || str.charAt(i) == '-') return true;
         }
         return false;
+    }
+
+
+    private boolean threeDotsCase(String str, Docs currentDoc, int position){
+
+
+        String beforeDots="";
+        String afterDots="";
+        for (int i = 0; i <str.length() ; i++) {
+
+            if(!(str.charAt(i)=='.')) {
+                beforeDots = beforeDots + str.charAt(i);
+            }
+            else{
+                if(i+1<str.length() && str.charAt(i+1)=='.') {
+                    if (i + 2 < str.length() && str.charAt(i + 2) == '.') {
+                        for (int j = i + 3; j < str.length(); j++) {
+                            afterDots = afterDots + str.charAt(j);
+                        }
+                        addTheDictionary(beforeDots, currentDoc, position);
+                        addTheDictionary(afterDots, currentDoc, position);
+                        return true;
+                    }
+                }
+
+            }
+        }
+        return false;
+
     }
 
     // replace 'o' with zero

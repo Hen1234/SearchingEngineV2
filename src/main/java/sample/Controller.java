@@ -557,6 +557,7 @@ public class Controller implements Initializable {
     private ObservableList<String> citiesObservableList(HashMap<String, City> cities) {
         //ConcurrentHashMap<String, City> map = cities;
         ObservableList<String> citiesObservableList = FXCollections.observableArrayList();
+
         for (String key : cities.keySet()) {
             citiesObservableList.add(key);
         }
@@ -628,12 +629,13 @@ public class Controller implements Initializable {
             Docs choicesDoc = (Docs) Documents.get(docChoiced);
             PriorityQueue<TermsPerDoc> newDocQueue = new PriorityQueue<>();
             String entities =  "";
-            for (int i = 0; i < choicesDoc.getMostFiveFrequencyEssences().size(); i++) {
+
+            while(!choicesDoc.getMostFiveFrequencyEssences().isEmpty()){
                 TermsPerDoc current = choicesDoc.getMostFiveFrequencyEssences().poll();
                 entities = entities+ current.getValue()+" - "+current.getTf() + System.lineSeparator();
                 newDocQueue.add(current);
-
             }
+            choicesDoc.setMostFiveFrequencyEssences(newDocQueue);
             labelEntities.setText(entities);
 
 

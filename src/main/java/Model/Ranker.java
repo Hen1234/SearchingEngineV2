@@ -79,7 +79,14 @@ public class Ranker {
 
         if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()>0){
             currentQueryDoc.setRank(currentQueryDoc.getRank()+20);
+        }else{
+            if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()<2){
+                System.out.println("here -20");
+                currentQueryDoc.setRank(currentQueryDoc.getRank()-20);
+            }
+
         }
+
     }
 
     private double tfIDF (QueryTerm currentQueryTerm, QueryDoc currentQueryDoc , double queryLength) {
