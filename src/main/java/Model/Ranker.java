@@ -48,9 +48,9 @@ public class Ranker {
         }
         currentQueryDoc.setRank(currentQueryDoc.getRank()*currentQueryDoc.getQueryTermsInDocsAndQuery().size());
 
-        if(currentQueryDoc.isQueryContainEntitiy){
-            currentQueryDoc.setRank(currentQueryDoc.getRank()*5);
-        }
+//        if(currentQueryDoc.isQueryContainEntitiy){
+//            currentQueryDoc.setRank(currentQueryDoc.getRank()*5);
+//        }
         //update the currentQueryDoc's rank by cosSim
         //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
         inHeader(currentQueryDoc);
@@ -77,14 +77,18 @@ public class Ranker {
 
     private void moreThanOneTerm(QueryDoc currentQueryDoc) {
 
-        if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()>0){
-            currentQueryDoc.setRank(currentQueryDoc.getRank()+20);
-        }else{
-            if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()<2){
-                System.out.println("here -20");
-                currentQueryDoc.setRank(currentQueryDoc.getRank()-20);
-            }
+//        if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()>0){
+//            currentQueryDoc.setRank(currentQueryDoc.getRank()+20);
+//        }else{
+//            if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()<2){
+//                System.out.println("here -20");
+//                currentQueryDoc.setRank(currentQueryDoc.getRank()-20);
+//            }
+//
+//        }
 
+        if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()==1){
+            currentQueryDoc.setRank(currentQueryDoc.getRank()-20);
         }
 
     }

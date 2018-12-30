@@ -124,9 +124,14 @@ public class Parse {
             }*/
 
             //3 dots case
-           if(threeDotsCase(text[i], doc, i)){
-               continue;
-           }
+            if (threeDotsCase(text[i], doc, i)) {
+                continue;
+            }
+
+            //dash end of word case
+            if(dashAndOfWord(text[i], doc, i)){
+                continue;
+            }
 
             if (text[i].length() > 0 && (text[i].charAt(0) == '/' || text[i].charAt(0) == '|'
                     || text[i].charAt(0) == '-' || text[i].charAt(0) == '\''
@@ -188,16 +193,18 @@ public class Parse {
 
             }
 
+
             if (isContainDash(text[i])) {
                 if (!isQuery && !isHeader) {
                     addTheDictionary(text[i], doc, i);
+                   // dashCase(text[i], doc, i);
                 } else {
-                    if (toStem){
-                        termsOfQuery.append(text[i]+" ");
-                        termsOfHeader.append(text[i]+" ");
+                    if (toStem) {
+                        termsOfQuery.append(text[i] + " ");
+                        termsOfHeader.append(text[i] + " ");
                     } else
-                        termsOfQuery.append(stemmer.stemming(text[i]+" "));
-                         termsOfHeader.append(stemmer.stemming(text[i]+" "));
+                        termsOfQuery.append(stemmer.stemming(text[i] + " "));
+                    termsOfHeader.append(stemmer.stemming(text[i] + " "));
                 }
 
                 continue;
@@ -739,7 +746,7 @@ public class Parse {
                     addTheDictionary(text[i], doc, i);
                 }
             } else {
-                if(isQuery){
+                if (isQuery) {
                     if (isContainSlash(text[i])) {
                         String ans1 = "";
                         for (int x = 0; x < text[i].length(); x++) {
@@ -747,22 +754,20 @@ public class Parse {
                                 ans1 = ans1 + text[i].charAt(x);
                             } else {
                                 if (ans1.length() > 0) {
-                                    termsOfQuery.append(ans1+" ");
+                                    termsOfQuery.append(ans1 + " ");
                                     ans1 = "";
                                 }
                             }
                         }
                         if (ans1.length() > 0) {
-                            termsOfQuery.append(ans1+" ");
+                            termsOfQuery.append(ans1 + " ");
                             System.out.println(termsOfQuery);
                             ans1 = "";
                         }
-                    }
-                    else{
+                    } else {
                         termsOfQuery.append(text[i] + " ");
                     }
-                }
-                else
+                } else
                     termsOfHeader.append(text[i] + " ");
                 /*}*/
             }
@@ -810,217 +815,261 @@ public class Parse {
         }
     }
 
-    private boolean isContainSlash(String str) {
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == '/' || str.charAt(i) == '|'
-                    || str.charAt(i) == '-') return true;
+    private boolean dashAndOfWord(String s, Docs doc, int i) {
+
+        String newString="";
+        if(s.charAt(s.length()-1)=='-'){
+
+            newString = s.substring(0,s.length()-1);
+            addTheDictionary(newString,doc,i);
+            return true;
+
+        }else{
+            return false;
         }
-        return false;
+
+
+    }
+
+    private void dashCase(String s, Docs doc, int position) {
+
+
+        String beforeDots = "";
+        String afterDots = "";
+        for (int i = 0; i < s.length(); i++) {
+
+            if (!(s.charAt(i) == '-')) {
+                beforeDots = beforeDots + s.charAt(i);
+            } else {
+                for (int j = i + 1; j < s.length(); j++) {
+                    afterDots = afterDots + s.charAt(j);
+
+                }
+                break;
+
+
+            }
+        }
+
+        addTheDictionary(beforeDots, doc, position);
+        addTheDictionary(afterDots, doc, position);
+
     }
 
 
-    private boolean threeDotsCase(String str, Docs currentDoc, int position){
+
+
+private boolean isContainSlash(String str){
+        for(int i=0;i<str.length();i++){
+        if(str.charAt(i)=='/'||str.charAt(i)=='|'
+        ||str.charAt(i)=='-')return true;
+        }
+        return false;
+        }
+
+
+private boolean threeDotsCase(String str,Docs currentDoc,int position){
 
 
         String beforeDots="";
         String afterDots="";
-        for (int i = 0; i <str.length() ; i++) {
+        for(int i=0;i<str.length();i++){
 
-            if(!(str.charAt(i)=='.')) {
-                beforeDots = beforeDots + str.charAt(i);
-            }
-            else{
-                if(i+1<str.length() && str.charAt(i+1)=='.') {
-                    if (i + 2 < str.length() && str.charAt(i + 2) == '.') {
-                        for (int j = i + 3; j < str.length(); j++) {
-                            afterDots = afterDots + str.charAt(j);
-                        }
-                        addTheDictionary(beforeDots, currentDoc, position);
-                        addTheDictionary(afterDots, currentDoc, position);
-                        return true;
-                    }
-                }
+        if(!(str.charAt(i)=='.')){
+        beforeDots=beforeDots+str.charAt(i);
+        }
+        else{
+        if(i+1<str.length()&&str.charAt(i+1)=='.'){
+        if(i+2<str.length()&&str.charAt(i+2)=='.'){
+        for(int j=i+3;j<str.length();j++){
+        afterDots=afterDots+str.charAt(j);
+        }
+        addTheDictionary(beforeDots,currentDoc,position);
+        addTheDictionary(afterDots,currentDoc,position);
+        return true;
+        }
+        }
 
-            }
+        }
         }
         return false;
 
-    }
-
-    // replace 'o' with zero
-    private String replaceOby0(String str) {
-        boolean flag = false;
-        String ans = "";
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) != 'o' && str.charAt(i) != 'O' && !Character.isDigit(str.charAt(i))
-                    && str.charAt(i) != '.' && str.charAt(i) != ',') {
-                flag = true;
-            }
         }
-        if (!flag) {
-            return replaceFromMap(str);
+
+// replace 'o' with zero
+private String replaceOby0(String str){
+        boolean flag=false;
+        String ans="";
+        for(int i=0;i<str.length();i++){
+        if(str.charAt(i)!='o'&&str.charAt(i)!='O'&&!Character.isDigit(str.charAt(i))
+        &&str.charAt(i)!='.'&&str.charAt(i)!=','){
+        flag=true;
+        }
+        }
+        if(!flag){
+        return replaceFromMap(str);
         }
         return str;
-    }
+        }
 
-    // is the given str is mounth
-    private boolean isInMonth(String str) {
+// is the given str is mounth
+private boolean isInMonth(String str){
 
         return months.containsKey(str);
-    }
+        }
 
-    // if the last char of string is '%'
-    private boolean lastCharIsPercents(String str) {
-        return str.charAt(str.length() - 1) == '%';
-    }
+// if the last char of string is '%'
+private boolean lastCharIsPercents(String str){
+        return str.charAt(str.length()-1)=='%';
+        }
 
-    // turn numeric string into atual number
-    private double fromStringToDouble(String str) {
+// turn numeric string into atual number
+private double fromStringToDouble(String str){
 
-        String tmp = "";
-        tmp = replaceFromMap(str);
-        Double ans = 0.0;
-        if (!isContainDot(tmp)) {
-            try {
-                ans = Double.parseDouble(tmp + ".0");
-                return ans;
-            } catch (Exception e) {
-                return 0;
-            }
-        } else {
-            try {
-                ans = Double.parseDouble(tmp);
-            } catch (Exception e) {
-                return ans;
-            }
+        String tmp="";
+        tmp=replaceFromMap(str);
+        Double ans=0.0;
+        if(!isContainDot(tmp)){
+        try{
+        ans=Double.parseDouble(tmp+".0");
+        return ans;
+        }catch(Exception e){
+        return 0;
+        }
+        }else{
+        try{
+        ans=Double.parseDouble(tmp);
+        }catch(Exception e){
+        return ans;
+        }
         }
         return ans;
-    }
+        }
 
-    // is the given string is million / billion / bn ...
-    private boolean isInNumTerms(String str) {
+// is the given string is million / billion / bn ...
+private boolean isInNumTerms(String str){
         return numTerms.contains(str);
-    }
+        }
 
-    // is the first chat in given string is number
-    private boolean isNumericStart(String str) {
+// is the first chat in given string is number
+private boolean isNumericStart(String str){
 
-        int countDot = 0;
-        for (int i = 0; i < str.length(); i++) { ///////////////////////////////  i < str.length()-1
-            if (!Character.isDigit(str.charAt(i)) && (str.charAt(i) != ',') && str.charAt(i) != '.') {
+        int countDot=0;
+        for(int i=0;i<str.length();i++){ ///////////////////////////////  i < str.length()-1
+        if(!Character.isDigit(str.charAt(i))&&(str.charAt(i)!=',')&&str.charAt(i)!='.'){
 
-                return false;
-            } else {
+        return false;
+        }else{
 
-                if (str.charAt(i) == '.') countDot++;
-                if (countDot > 1) {
-                    return false;
-                }
-            }
+        if(str.charAt(i)=='.')countDot++;
+        if(countDot>1){
+        return false;
+        }
+        }
 
         }
 
         return true;
-    }
-
-    // is the first char in given string is '$'
-    private boolean isDollar(String str) {
-        return str.length() > 1 && str.charAt(0) == '$';
-    }
-
-    // is the given string contain '-'
-    private boolean isContainDash(String str) {
-        for (int i = 0; i < str.length(); i++)
-            if (str.charAt(i) == '-') return true;
-        return false;
-    }
-
-    // is the given string contain '.'
-    private boolean isContainDot(String str) {
-        for (int i = 0; i < str.length(); i++)
-            if (str.charAt(i) == '.') return true;
-        return false;
-    }
-
-    // intialize hashmap of mounth and their number in order to change in o(1)
-    private void insertMonths() {
-        months.put("January", "01");
-        months.put("February", "02");
-        months.put("February", "02");
-        months.put("March", "03");
-        months.put("April", "04");
-        months.put("May", "05");
-        months.put("June", "06");
-        months.put("July", "07");
-        months.put("August", "08");
-        months.put("September", "09");
-        months.put("October", "10");
-        months.put("November", "11");
-        months.put("December", "12");
-
-        months.put("JANUARY", "01");
-        months.put("FEBRUARY", "02");
-        months.put("MARCH", "03");
-        months.put("APRIL", "04");
-        months.put("MAY", "05");
-        months.put("JUNE", "06");
-        months.put("JULY", "07");
-        months.put("AUGUST", "08");
-        months.put("SEPTEMBER", "09");
-        months.put("OCTOBER", "10");
-        months.put("NOVEMBER", "11");
-        months.put("DECEMBER", "12");
-
-        months.put("JAN", "01");
-        months.put("FEB", "02");
-        months.put("MAR", "03");
-        months.put("APR", "04");
-        months.put("MAY", "05");
-        months.put("JUN", "06");
-        months.put("JUL", "07");
-        months.put("AUG", "08");
-        months.put("SEP", "09");
-        months.put("OCT", "10");
-        months.put("NOV", "11");
-        months.put("DEC", "12");
-
-        months.put("Jan", "01");
-        months.put("Feb", "02");
-        months.put("Mar", "03");
-        months.put("Apr", "04");
-        months.put("May", "05");
-        months.put("Jun", "06");
-        months.put("Jul", "07");
-        months.put("Aug", "08");
-        months.put("Sep", "09");
-        months.put("Oct", "10");
-        months.put("Nov", "11");
-        months.put("Dec", "12");
-    }
-
-    // insert stop words into hashmap
-    public void insertStopWords(String stopWordsPath) throws IOException {
-        try {
-            FileInputStream fis = new FileInputStream(new File(stopWordsPath));
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            String line = br.readLine();
-            while (line != null) {
-                stopWords.add(line);
-                line = br.readLine();
-            }
-        } catch (Exception e) {
-            System.out.println("file not Found");
         }
-    } // add with capital letter
 
-    // is stopWord - return if given str is stop word
-    private boolean isStopWord(String word) {
-        return stopWords.contains(word) || stopWords.contains(word.toLowerCase());
-    }
+// is the first char in given string is '$'
+private boolean isDollar(String str){
+        return str.length()>1&&str.charAt(0)=='$';
+        }
 
-    // intialize hashmap which help to
-    private void insertNumTerms() {
+// is the given string contain '-'
+private boolean isContainDash(String str){
+        for(int i=0;i<str.length();i++)
+        if(str.charAt(i)=='-')return true;
+        return false;
+        }
+
+// is the given string contain '.'
+private boolean isContainDot(String str){
+        for(int i=0;i<str.length();i++)
+        if(str.charAt(i)=='.')return true;
+        return false;
+        }
+
+// intialize hashmap of mounth and their number in order to change in o(1)
+private void insertMonths(){
+        months.put("January","01");
+        months.put("February","02");
+        months.put("February","02");
+        months.put("March","03");
+        months.put("April","04");
+        months.put("May","05");
+        months.put("June","06");
+        months.put("July","07");
+        months.put("August","08");
+        months.put("September","09");
+        months.put("October","10");
+        months.put("November","11");
+        months.put("December","12");
+
+        months.put("JANUARY","01");
+        months.put("FEBRUARY","02");
+        months.put("MARCH","03");
+        months.put("APRIL","04");
+        months.put("MAY","05");
+        months.put("JUNE","06");
+        months.put("JULY","07");
+        months.put("AUGUST","08");
+        months.put("SEPTEMBER","09");
+        months.put("OCTOBER","10");
+        months.put("NOVEMBER","11");
+        months.put("DECEMBER","12");
+
+        months.put("JAN","01");
+        months.put("FEB","02");
+        months.put("MAR","03");
+        months.put("APR","04");
+        months.put("MAY","05");
+        months.put("JUN","06");
+        months.put("JUL","07");
+        months.put("AUG","08");
+        months.put("SEP","09");
+        months.put("OCT","10");
+        months.put("NOV","11");
+        months.put("DEC","12");
+
+        months.put("Jan","01");
+        months.put("Feb","02");
+        months.put("Mar","03");
+        months.put("Apr","04");
+        months.put("May","05");
+        months.put("Jun","06");
+        months.put("Jul","07");
+        months.put("Aug","08");
+        months.put("Sep","09");
+        months.put("Oct","10");
+        months.put("Nov","11");
+        months.put("Dec","12");
+        }
+
+// insert stop words into hashmap
+public void insertStopWords(String stopWordsPath)throws IOException{
+        try{
+        FileInputStream fis=new FileInputStream(new File(stopWordsPath));
+        InputStreamReader isr=new InputStreamReader(fis);
+        BufferedReader br=new BufferedReader(isr);
+        String line=br.readLine();
+        while(line!=null){
+        stopWords.add(line);
+        line=br.readLine();
+        }
+        }catch(Exception e){
+        System.out.println("file not Found");
+        }
+        } // add with capital letter
+
+// is stopWord - return if given str is stop word
+private boolean isStopWord(String word){
+        return stopWords.contains(word)||stopWords.contains(word.toLowerCase());
+        }
+
+// intialize hashmap which help to
+private void insertNumTerms(){
 
         numTerms.add("Thousand");
         numTerms.add("Million");
@@ -1032,131 +1081,131 @@ public class Parse {
         numTerms.add("thousand");
 
 
-    }
+        }
 
-    // return if the given term is Us Dollars
-    private boolean isUSDollars(String[] text, int i) {
+// return if the given term is Us Dollars
+private boolean isUSDollars(String[]text,int i){
 
-        if (i + 3 < text.length && text[i + 3].equals("dollars")
-                && text[i + 2].equals("U.S.") && (text[i + 1].equals("trillion") ||
-                text[i + 1].equals("million") || text[i + 1].equals("billion")))
-            return true;
+        if(i+3<text.length&&text[i+3].equals("dollars")
+        &&text[i+2].equals("U.S.")&&(text[i+1].equals("trillion")||
+        text[i+1].equals("million")||text[i+1].equals("billion")))
+        return true;
 
         return false;
-    }
+        }
 
-    //convert parsing by the rules
-    private String usDollarsConvert(String number, String kind) {
-        if (kind.equals("billion")) {
-            return number + "000" + " M Dollars";
+//convert parsing by the rules
+private String usDollarsConvert(String number,String kind){
+        if(kind.equals("billion")){
+        return number+"000"+" M Dollars";
         }
-        if (kind.equals("million")) {
-            return number + " M Dollars";
+        if(kind.equals("million")){
+        return number+" M Dollars";
         }
-        if (kind.equals("trillion")) {
-            return number + "000000" + " M Dollars";
+        if(kind.equals("trillion")){
+        return number+"000000"+" M Dollars";
         }
         return null;
-    }
+        }
 
-    // given string equal bn
-    private boolean bn(String str) {
+// given string equal bn
+private boolean bn(String str){
         return str.equals("bn");
-    }
+        }
 
-    // given string equal m
-    private boolean m(String str) {
+// given string equal m
+private boolean m(String str){
         return str.equals("m");
-    }
-
-    // given string is furction
-    private boolean isFruction(String str) {
-        if (!slashCounter(str))
-            return false;
-        for (int i = 0; i < str.length(); i++) {
-            if (!Character.isDigit(str.charAt(i)) && !(str.charAt(i) == '/'))
-                return false;
         }
-        return true;
-    }
 
-    // count slashes in given string
-    private boolean slashCounter(String str) {
-        int i = 0;
-        for (int j = 0; j < str.length(); j++) {
-            if (str.charAt(j) == '/')
-                i++;
-        }
-        return i == 1;
-    }
-
-    // replace map with term and with its replacment by the given rules
-    private void initialreplacment() {
-        replacements.put("O", "0");
-        replacements.put("o", "0");
-        replacements.put(",", "");
-        replacements.put("%", "");
-    }
-
-    // return if number is greater than 1m
-    private boolean greaterThanMillion(String str) {
-
-        int countComma = 0;
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) == ',') {
-                countComma++;
-            }
-        }
-        if (countComma >= 2)
-            return true;
+// given string is furction
+private boolean isFruction(String str){
+        if(!slashCounter(str))
         return false;
-    }
+        for(int i=0;i<str.length();i++){
+        if(!Character.isDigit(str.charAt(i))&&!(str.charAt(i)=='/'))
+        return false;
+        }
+        return true;
+        }
 
-    // return if given string present a template of time
-    private boolean isTimes(String str) {
+// count slashes in given string
+private boolean slashCounter(String str){
+        int i=0;
+        for(int j=0;j<str.length();j++){
+        if(str.charAt(j)=='/')
+        i++;
+        }
+        return i==1;
+        }
 
-        for (int i = 0; i < str.length(); i++) {
+// replace map with term and with its replacment by the given rules
+private void initialreplacment(){
+        replacements.put("O","0");
+        replacements.put("o","0");
+        replacements.put(",","");
+        replacements.put("%","");
+        }
 
-            if (str.charAt(i) != ':' && !Character.isDigit(str.charAt(i))) {
-                return false;
-            }
+// return if number is greater than 1m
+private boolean greaterThanMillion(String str){
+
+        int countComma=0;
+        for(int i=0;i<str.length();i++){
+        if(str.charAt(i)==','){
+        countComma++;
+        }
+        }
+        if(countComma>=2)
+        return true;
+        return false;
+        }
+
+// return if given string present a template of time
+private boolean isTimes(String str){
+
+        for(int i=0;i<str.length();i++){
+
+        if(str.charAt(i)!=':'&&!Character.isDigit(str.charAt(i))){
+        return false;
+        }
         }
         return true;
 
-    }
+        }
 
-    // replace a specific string in map
-    public String replaceFromMap(String string) {
-        StringBuilder sb = new StringBuilder(string);
-        for (Map.Entry<String, String> entry : this.replacements.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
+// replace a specific string in map
+public String replaceFromMap(String string){
+        StringBuilder sb=new StringBuilder(string);
+        for(Map.Entry<String, String> entry:this.replacements.entrySet()){
+        String key=entry.getKey();
+        String value=entry.getValue();
 
-            int start = sb.indexOf(key, 0);
-            while (start > -1) {
-                int end = start + key.length();
-                int nextSearchStart = start + value.length();
-                sb.replace(start, end, value);
-                start = sb.indexOf(key, nextSearchStart);
-            }
+        int start=sb.indexOf(key,0);
+        while(start>-1){
+        int end=start+key.length();
+        int nextSearchStart=start+value.length();
+        sb.replace(start,end,value);
+        start=sb.indexOf(key,nextSearchStart);
+        }
         }
         return sb.toString();
-    }
+        }
 
-    // remove dashes from given string
-    private String removeDashes(String s) {
-        String ans = "";
-        for (int k = 0; k < s.length(); k++) {
-            if (s.charAt(k) != '-' && s.charAt(k) != '/' && s.charAt(k) != '|' && s.charAt(k) != '\''
-                    && s.charAt(k) != '/' && s.charAt(k) != '`' && s.charAt(k) != ' ') {
-                ans = ans + s.charAt(k);
-            }
+// remove dashes from given string
+private String removeDashes(String s){
+        String ans="";
+        for(int k=0;k<s.length();k++){
+        if(s.charAt(k)!='-'&&s.charAt(k)!='/'&&s.charAt(k)!='|'&&s.charAt(k)!='\''
+        &&s.charAt(k)!='/'&&s.charAt(k)!='`'&&s.charAt(k)!=' '){
+        ans=ans+s.charAt(k);
+        }
         }
         return ans;
-    }
+        }
 
-    //update the Integer of the given doc (per term) and send add the term to the tempDictionary
-    private void addTheDictionary(String termValue, Docs doc, int i) {
+//update the Integer of the given doc (per term) and send add the term to the tempDictionary
+private void addTheDictionary(String termValue,Docs doc,int i){
 //        if(termValue.equals("blood")){
 //            System.out.println("blood i= "+i);
 //        }
@@ -1164,52 +1213,52 @@ public class Parse {
 //            System.out.println("alcohol i= "+i);
 //        }
         doc.setDocLength(doc.getDocLength()+1);
-        boolean isProblem = false;
-        if (!(termValue.length() > 0) || termValue == null) {
-            return;
+        boolean isProblem=false;
+        if(!(termValue.length()>0)||termValue==null){
+        return;
         }
-        if (toStem) {
-            termValue = stemmer.stemming(termValue);
-        }
-
-        if (termValue.equals("tel")) isProblem = true;
-
-        if (Character.isUpperCase(termValue.charAt(0))) {
-            termValue = termValue.toUpperCase();
+        if(toStem){
+        termValue=stemmer.stemming(termValue);
         }
 
-        if (Character.isLowerCase(termValue.charAt(0))) {
-            termValue = termValue.toLowerCase();
+        if(termValue.equals("tel"))isProblem=true;
+
+        if(Character.isUpperCase(termValue.charAt(0))){
+        termValue=termValue.toUpperCase();
         }
-        Iterator<Terms> iteratorDict = tempDictionary.iterator();
 
-        for (Terms term : tempDictionary) {
-            //while (iteratorDict.hasNext()) {
-            //Terms term = iteratorDict.next();
-            if (term.getValue().equals(termValue)) { //if the terms exist in the tempDictionary
-                if (term.getDocsAndAmount().containsKey(doc)) { //if the term exists the given doc
-                    Pair<Integer, StringBuilder> newPir = new Pair<Integer, StringBuilder>(term.getDocsAndAmount().get(doc).getKey() + 1, term.getDocsAndAmount().get(doc).getValue().append(" ,").append(i));
-                    term.getDocsAndAmount().put(doc, newPir);
-                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
-                    if (cities.containsKey(tempCity) && !isProblem) { //if a city
-                        cities.get(tempCity).getLocations().get(doc.getDocNo()).append(" ,").append(i);
+        if(Character.isLowerCase(termValue.charAt(0))){
+        termValue=termValue.toLowerCase();
+        }
+        Iterator<Terms> iteratorDict=tempDictionary.iterator();
 
-                    }
+        for(Terms term:tempDictionary){
+        //while (iteratorDict.hasNext()) {
+        //Terms term = iteratorDict.next();
+        if(term.getValue().equals(termValue)){ //if the terms exist in the tempDictionary
+        if(term.getDocsAndAmount().containsKey(doc)){ //if the term exists the given doc
+        Pair<Integer, StringBuilder> newPir=new Pair<Integer, StringBuilder>(term.getDocsAndAmount().get(doc).getKey()+1,term.getDocsAndAmount().get(doc).getValue().append(" ,").append(i));
+        term.getDocsAndAmount().put(doc,newPir);
+        String tempCity=Character.toUpperCase(termValue.charAt(0))+termValue.substring(1,termValue.length()).toLowerCase();
+        if(cities.containsKey(tempCity)&&!isProblem){ //if a city
+        cities.get(tempCity).getLocations().get(doc.getDocNo()).append(" ,").append(i);
+
+        }
 
 
-                } else {
-                    term.getDocsAndAmount().put(doc, new Pair<Integer, StringBuilder>(1, new StringBuilder("").append(i))); //if the term does not exist the given doc
-                    String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
-                    //String tempUpper = termValue.charAt(0) + termValue.substring(1, termValue.length()).toLowerCase();
-                    if (cities.containsKey(tempCity) && !isProblem) {//|| cities.containsKey(tempCity.toUpperCase())|| cities.containsKey(tempCity.toLowerCase())) {  //if a city
-                        cities.get(tempCity).getLocations().put(doc.getDocNo(), new StringBuilder("").append(i));
+        }else{
+        term.getDocsAndAmount().put(doc,new Pair<Integer, StringBuilder>(1,new StringBuilder("").append(i))); //if the term does not exist the given doc
+        String tempCity=Character.toUpperCase(termValue.charAt(0))+termValue.substring(1,termValue.length()).toLowerCase();
+        //String tempUpper = termValue.charAt(0) + termValue.substring(1, termValue.length()).toLowerCase();
+        if(cities.containsKey(tempCity)&&!isProblem){//|| cities.containsKey(tempCity.toUpperCase())|| cities.containsKey(tempCity.toLowerCase())) {  //if a city
+        cities.get(tempCity).getLocations().put(doc.getDocNo(),new StringBuilder("").append(i));
 
-                    }
-                }
-                term.totalInCorpus++;
-                return;
-            }
-            // DOG in tempdictionary and dog in termValue
+        }
+        }
+        term.totalInCorpus++;
+        return;
+        }
+        // DOG in tempdictionary and dog in termValue
 //            if(Character.isLowerCase(termValue.charAt(0)) && term.getValue().equals(termValue.toUpperCase())){
 //                term.setValue(termValue);
 //                if (term.getDocsAndAmount().containsKey(doc)) { //if the term exists the given doc
@@ -1235,22 +1284,22 @@ public class Parse {
 //            }
         }
 
-        Terms newTerm = new Terms(termValue); //if the term does not exist the tempDictionary
-        newTerm.getDocsAndAmount().put(doc, new Pair<Integer, StringBuilder>(1, new StringBuilder("").append(i)));
+        Terms newTerm=new Terms(termValue); //if the term does not exist the tempDictionary
+        newTerm.getDocsAndAmount().put(doc,new Pair<Integer, StringBuilder>(1,new StringBuilder("").append(i)));
         newTerm.totalInCorpus++;
         tempDictionary.add(newTerm);
-        String tempCity = Character.toUpperCase(termValue.charAt(0)) + termValue.substring(1, termValue.length()).toLowerCase();
-        if (cities.containsKey(tempCity) && !isProblem) {  //if a city
-            cities.get(tempCity).getLocations().put(doc.getDocNo(), new StringBuilder("").append(i));
+        String tempCity=Character.toUpperCase(termValue.charAt(0))+termValue.substring(1,termValue.length()).toLowerCase();
+        if(cities.containsKey(tempCity)&&!isProblem){  //if a city
+        cities.get(tempCity).getLocations().put(doc.getDocNo(),new StringBuilder("").append(i));
 
         }
-    }
+        }
 
-    public static HashMap<String, HashSet<String>> getTermsInHeaderToDoc() {
+public static HashMap<String, HashSet<String>>getTermsInHeaderToDoc(){
         return termsInHeaderToDoc;
-    }
+        }
 
-    public void setTermsInHeaderToDoc(HashMap<String, HashSet<String>> termsInHeaderToDoc) {
-        Parse.termsInHeaderToDoc = termsInHeaderToDoc;
-    }
-}
+public void setTermsInHeaderToDoc(HashMap<String, HashSet<String>>termsInHeaderToDoc){
+        Parse.termsInHeaderToDoc=termsInHeaderToDoc;
+        }
+        }

@@ -104,7 +104,6 @@ public class Searcher {
     }
 
     /**
-     *
      * @param query
      * @return
      * @throws IOException
@@ -127,39 +126,39 @@ public class Searcher {
         //check dash
         for (int k = 0; k < splitedQueryAfterParse.length; k++) {
 
-            if(isContainDash(splitedQueryAfterParse[k])){
+            if (isContainDash(splitedQueryAfterParse[k])) {
 
-                String beforeDash="";
-                String afterDash="";
+                String beforeDash = "";
+                String afterDash = "";
 
                 int i = 0;
-                for (i = 0; i <splitedQueryAfterParse[k].length() ; i++) {
-                    if(!(splitedQueryAfterParse[k].charAt(i)=='-')){
-                        beforeDash = beforeDash+splitedQueryAfterParse[k].charAt(i);
+                for (i = 0; i < splitedQueryAfterParse[k].length(); i++) {
+                    if (!(splitedQueryAfterParse[k].charAt(i) == '-')) {
+                        beforeDash = beforeDash + splitedQueryAfterParse[k].charAt(i);
 
-                    }else{
+                    } else {
                         break;
                     }
 
                 }
-                for (int j=i+1; j <splitedQueryAfterParse[k].length() ; j++) {
-                    afterDash = afterDash+splitedQueryAfterParse[k].charAt(j);
+                for (int j = i + 1; j < splitedQueryAfterParse[k].length(); j++) {
+                    afterDash = afterDash + splitedQueryAfterParse[k].charAt(j);
 
                 }
 
-                try{
-                    String[] newSplitedQueryAfterParse= new String[splitedQueryAfterParse.length+2];
+                try {
+                    String[] newSplitedQueryAfterParse = new String[splitedQueryAfterParse.length + 2];
 
                     int j = 0;
-                    for (j = 0; j <splitedQueryAfterParse.length ; j++) {
-                        newSplitedQueryAfterParse[j]= splitedQueryAfterParse[j];
+                    for (j = 0; j < splitedQueryAfterParse.length; j++) {
+                        newSplitedQueryAfterParse[j] = splitedQueryAfterParse[j];
 
                     }
-                    newSplitedQueryAfterParse[j]= beforeDash;
-                    newSplitedQueryAfterParse[j+1]= afterDash;
+                    newSplitedQueryAfterParse[j] = beforeDash;
+                    newSplitedQueryAfterParse[j + 1] = afterDash;
                     splitedQueryAfterParse = newSplitedQueryAfterParse;
-                }catch (Exception e){}
-
+                } catch (Exception e) {
+                }
 
 
             }
@@ -280,13 +279,7 @@ public class Searcher {
 
         //check if the term exists the dictionary
         boolean isNull = true;
-        if (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
-            //create a new QueryTerm
-            currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
-            isNull = false;
-            //update isSynonym
-            if (isSynonym) currentQueryTerm.setSynonym(true);
-        } else {
+        if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
             //toUpperCase
             if (Dictionary.containsKey(StringcurretTermOfQuery.toUpperCase())) {
                 //create a new QueryTerm
@@ -294,8 +287,15 @@ public class Searcher {
                 isNull = false;
                 if (isSynonym) currentQueryTerm.setSynonym(true);
             }
-        }
+        } else if
+                (Dictionary.containsKey(StringcurretTermOfQuery.toLowerCase())) {
+            //create a new QueryTerm
+            currentQueryTerm = new QueryTerm(StringcurretTermOfQuery.toLowerCase());
+            isNull = false;
+            //update isSynonym
+            if (isSynonym) currentQueryTerm.setSynonym(true);
 
+        }
         if (isNull) {
             String withS = "";
             if (Character.isLowerCase(StringcurretTermOfQuery.charAt(StringcurretTermOfQuery.length() - 1))) {
@@ -355,7 +355,7 @@ public class Searcher {
 
                     //find location in the doc
                     k++;
-                    while (k>lineFromFile.length()-1 && lineFromFile.charAt(k) != 'd') {
+                    while (k > lineFromFile.length() - 1 && lineFromFile.charAt(k) != 'd') {
                         locations = locations + lineFromFile.charAt(k);
                         k++;
                     }
@@ -613,16 +613,48 @@ public class Searcher {
                     k++;
                 }
             }
+
+
             while (queryNum != null && queryNum.length() > 0 && queryNum.charAt(queryNum.length() - 1) == ' ') {
                 queryNum = queryNum.substring(0, queryNum.length() - 1);
             }
             while (query != null && query.length() > 0 && query.charAt(query.length() - 1) == ' ') {
                 query = query.substring(0, query.length() - 1);
             }
+//description
+//            line = br.readLine();
+//            if(line.equals("")){
+//                line = br.readLine();
+//            }
+//            if(line.charAt(0)== '<') {
+//                for (int i = 1; i < line.length(); i++) {
+//                    if (line.charAt(i) == 'd' && i + 1 < line.length() && line.charAt(i + 1) == 'e' &&
+//                            i + 2 < line.length() && line.charAt(i + 2) == 's' && i + 3 < line.length() && line.charAt(i + 3) == 'c') {
+//                        line = br.readLine();
+//
+//                        query = query + " " + line;
+//                        break;
+//
+//                    }
+//
+//                }
+//
+//
+//            }
+//            line = br.readLine();
+//            while(line!=null &&!(line.equals(""))){
+//                if(!(line.charAt(0)=='<')){
+//                    query = query + " " + line;
+//                    line = br.readLine();
+//                }
+//               break;
+//
+//            }
 
             ans.put(queryNum, query);
             queryNum = "";
             query = "";
+
 
         }
         codesAndQueries = ans;
