@@ -137,7 +137,7 @@ public class Ranker {
 
         /*return (Math.log10((M + 1) / df) * cwq * (((b+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl)))))));*/
         if(currentQueryTerm.isFirstWordInQuery())
-            return 5 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
+            return 5 * Math.log10((M-df+0.5)/(df+0.5))*(((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
         if(currentQueryTerm.isSynonym() && ! currentQueryDoc.isContainsQueryTermInHeader() ) {
             return 0.5 * Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
@@ -156,9 +156,10 @@ public class Ranker {
 
 
 
+        return Math.log10((M-df+0.5)/(df+0.5))*(((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
 
-        return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
+        //return Math.log10((M + 1) / df) * cwq * (((k+1) * cwd) / (cwd + (k * ((1-b) + (b * (d / avdl))))));
 
     }
 
