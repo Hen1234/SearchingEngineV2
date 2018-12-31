@@ -412,6 +412,11 @@ public class Searcher {
 
                                     if (!docRelevantForTheQuery.containsKey(newQueryDoc.getDocNO()))
                                         docRelevantForTheQuery.put(newQueryDoc.getDocNO(), newQueryDoc);
+                                    else {
+                                        if (!docRelevantForTheQuery.get(newQueryDoc.getDocNO()).getQueryTermsInDocsAndQuery().containsKey(currentQueryTerm.getValue())) {
+                                            docRelevantForTheQuery.get(newQueryDoc.getDocNO()).getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
+                                        }
+                                    }
                                 }
                             }
 
@@ -444,7 +449,11 @@ public class Searcher {
                             //add the new QueryDoc to the HashSet of the relevant docs for the query
                             if (!docRelevantForTheQuery.containsKey(newQueryDoc.getDocNO()))
                                 docRelevantForTheQuery.put(newQueryDoc.getDocNO(), newQueryDoc);
-
+                            else {
+                                if (!docRelevantForTheQuery.get(newQueryDoc.getDocNO()).getQueryTermsInDocsAndQuery().containsKey(currentQueryTerm.getValue())) {
+                                    docRelevantForTheQuery.get(newQueryDoc.getDocNO()).getQueryTermsInDocsAndQuery().put(currentQueryTerm.getValue(), currentQueryTerm);
+                                }
+                            }
                         }
                     }
                 }
