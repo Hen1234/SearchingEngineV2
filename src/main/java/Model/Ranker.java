@@ -53,9 +53,9 @@ public class Ranker {
 //        }
         //update the currentQueryDoc's rank by cosSim
         //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
-        inHeader(currentQueryDoc);
-        moreThanOneTerm(currentQueryDoc);
-        checkLocations(currentQueryDoc);
+//        inHeader(currentQueryDoc);
+//        moreThanOneTerm(currentQueryDoc);
+//        checkLocations(currentQueryDoc);
         qDocQueue.add(currentQueryDoc);
     }
 
