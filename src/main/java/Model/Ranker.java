@@ -46,17 +46,35 @@ public class Ranker {
             /*+ tfIDF(currentQueryTerm, currentQueryDoc,(double)queryLength))*/;
             //System.out.println(currentQueryDoc.getDocNO()+"rank= "+currentQueryDoc.getRank());
         }
-        currentQueryDoc.setRank(currentQueryDoc.getRank()*currentQueryDoc.getQueryTermsInDocsAndQuery().size());
+
 
 //        if(currentQueryDoc.isQueryContainEntitiy){
-//            currentQueryDoc.setRank(currentQueryDoc.getRank()*5);
+//            currentQueryDoc.setRank(currentQueryDoc.getRank()*1.2);
 //        }
         //update the currentQueryDoc's rank by cosSim
         //currentQueryDoc.setRank(currentQueryDoc.getRank() + 0.25*cosSim(currentQueryDoc, queryLength));
 //        inHeader(currentQueryDoc);
-//        moreThanOneTerm(currentQueryDoc);
-//        checkLocations(currentQueryDoc);
+        checkNumOfCommonWordsDocAndQuery(currentQueryDoc);
+        moreThanOneTerm(currentQueryDoc);
+        checkLocations(currentQueryDoc);
+        checkFirstLocation(currentQueryDoc);
         qDocQueue.add(currentQueryDoc);
+    }
+
+    private void checkNumOfCommonWordsDocAndQuery(QueryDoc currentQueryDoc) {
+        //duplicate the size of the num of terms in doc and query
+        currentQueryDoc.setRank(currentQueryDoc.getRank()*currentQueryDoc.getQueryTermsInDocsAndQuery().size());
+
+    }
+
+    private void checkFirstLocation(QueryDoc currentQueryDoc) {
+
+        ArrayList<String> locations = currentQueryDoc.getLocations();
+        if(locations.contains(0)||locations.contains(1)||locations.contains(2)){
+            currentQueryDoc.setRank(currentQueryDoc.getRank()+1.2);
+
+        }
+
     }
 
     private void checkLocations(QueryDoc currentQueryDoc) {
@@ -66,7 +84,7 @@ public class Ranker {
             for (int j = 0; j < locations.size() ; j++) {
                 if(locations.get(i).equals(locations.get(j)) || locations.get(i).equals(locations.get(j)+1)){
 
-                    currentQueryDoc.setRank(currentQueryDoc.getRank()+15);
+                    currentQueryDoc.setRank(currentQueryDoc.getRank()+1.2);
 
                 }
             }
@@ -88,7 +106,7 @@ public class Ranker {
 //        }
 
         if(currentQueryDoc.getQueryTermsInDocsAndQuery().size()==1){
-            currentQueryDoc.setRank(currentQueryDoc.getRank()-20);
+            currentQueryDoc.setRank(currentQueryDoc.getRank()-0.2);
         }
 
     }
@@ -124,8 +142,8 @@ public class Ranker {
         double df = currentQueryTerm.getDf();
         double avdl = Searcher.avdl;
         double M = Searcher.numOfDocumentsInCorpus;
-        double k = 1.2;
-        double b = 0.35;
+        double k = 1.25;
+        double b = 0.5;
 
         //double cwd = currentQueryTerm.getDocsAndAmount().get(currentQueryDoc.getDocNO()) d ; // normalization
         double cwd = currentQueryDoc.queryTermsInDocsAndQuery.get(currentQueryTerm.value).docsAndAmount.get(currentQueryDoc.docNO);
